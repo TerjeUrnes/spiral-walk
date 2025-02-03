@@ -1,5 +1,7 @@
 # spiral-walk
 
+<img src="spiral-walk-example.webp" width="300">
+
 ```js
 //SpiralWalkCoordGen.StopCondition = { maxCircles: 2}
 SpiralWalkCoordGen.StartCoord = {x: 5, y: 5};

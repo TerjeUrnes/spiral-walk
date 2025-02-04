@@ -12,7 +12,8 @@ SpiralWalkCoordGen.StopCondition = { maxCircles: 2}
 SpiralWalkCoordGen.StartCoord = {x: 5, y: 5};
 
 for (const coord of SpiralWalkCoorGen) {
-    console.log(coord);
+    //const result = testMatrix[coord.x][coord.y] != null ? "full" : "empty"
+    //console.log(coord, "The cell is " + result);
 }
 ```
 
@@ -25,38 +26,37 @@ generator.StopCondition = { maxCircles: 2}
 generator.StartCoord = {x: 5, y: 5};
 
 for (const coord of generator) {
-    console.log(coord);
+    //const result = testMatrix[coord.x][coord.y] != null ? "full" : "empty"
+    //console.log(coord, "The cell is " + result);
 }
 ```
-
-
-```
-outprint (both static and instance):
-
-    { x: 5, y: 5 }
-    { x: 5, y: 4 }
-    { x: 6, y: 4 }
-    { x: 6, y: 5 }
-    { x: 6, y: 6 }
-    { x: 5, y: 6 }
-    { x: 4, y: 6 }
-    { x: 4, y: 5 }
-    { x: 4, y: 4 }
-    { x: 4, y: 3 }
-    { x: 5, y: 3 }
-    { x: 6, y: 3 }
-    { x: 7, y: 3 }
-    { x: 7, y: 4 }
-    { x: 7, y: 5 }
-    { x: 7, y: 6 }
-    { x: 7, y: 7 }
-    { x: 6, y: 7 }
-    { x: 5, y: 7 }
-    { x: 4, y: 7 }
-    { x: 3, y: 7 }
-    { x: 3, y: 6 }
-    { x: 3, y: 5 }
-    { x: 3, y: 4 }
-    { x: 3, y: 3 }
-
-```
+<details>
+  <summary>
+    outprint (both static and instance commented out code):
+  </summary>
+    { x: 5, y: 5 } - The cell is empty<br>
+    { x: 5, y: 4 } - The cell is full <br>
+    { x: 6, y: 4 } - The cell is full <br>
+    { x: 6, y: 5 } - The cell is full <br>
+    { x: 6, y: 6 } - The cell is empty <br>
+    { x: 5, y: 6 } - The cell is empty <br>
+    { x: 4, y: 6 } - The cell is full <br>
+    { x: 4, y: 5 } - The cell is empty <br>
+    { x: 4, y: 4 } - The cell is empty <br>
+    { x: 4, y: 3 } - The cell is full <br>
+    { x: 5, y: 3 } - The cell is empty <br>
+    { x: 6, y: 3 } - The cell is full <br>
+    { x: 7, y: 3 } - The cell is full <br>
+    { x: 7, y: 4 } - The cell is full <br>
+    { x: 7, y: 5 } - The cell is full <br>
+    { x: 7, y: 6 } - The cell is full <br>
+    { x: 7, y: 7 } - The cell is full <br>
+    { x: 6, y: 7 } - The cell is empty <br>
+    { x: 5, y: 7 } - The cell is empty <br>
+    { x: 4, y: 7 } - The cell is empty <br>
+    { x: 3, y: 7 } - The cell is empty <br>
+    { x: 3, y: 6 } - The cell is full <br>
+    { x: 3, y: 5 } - The cell is empty <br>
+    { x: 3, y: 4 } - The cell is empty <br>
+    { x: 3, y: 3 } - The cell is empty
+</details>

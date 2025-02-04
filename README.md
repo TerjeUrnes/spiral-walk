@@ -8,8 +8,8 @@ Tool for generating coordinates for spiral walking in a 2D matrix.
 ```js
 // Use as static
 
-SpiralWalkCoordGen.StopCondition = { maxCircles: 2}
-SpiralWalkCoordGen.StartCoord = {x: 5, y: 5};
+SpiralWalkCoordGen.StopCondition = { maxCircles: 2 }
+SpiralWalkCoordGen.StartCoord = { x: 5, y: 5 };
 
 for (const coord of SpiralWalkCoorGen) {
     //const result = testMatrix[coord.x][coord.y] != null ? "full" : "empty"
@@ -22,8 +22,8 @@ for (const coord of SpiralWalkCoorGen) {
 
 const generator = new SpiralWalkCoordGen();
 
-generator.StopCondition = { maxCircles: 2}
-generator.StartCoord = {x: 5, y: 5};
+generator.StopCondition = { maxCircles: 2 }
+generator.StartCoord = { x: 5, y: 5 };
 
 for (const coord of generator) {
     //const result = testMatrix[coord.x][coord.y] != null ? "full" : "empty"
@@ -60,3 +60,6 @@ for (const coord of generator) {
     { x: 3, y: 4 } - The cell is empty <br>
     { x: 3, y: 3 } - The cell is empty
 </details>
+
+> [!CAUTION]
+> It does not check the input. The user of this class is responsible for that it is correct.

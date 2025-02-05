@@ -81,8 +81,10 @@ Coord outside of border can result in no iteration output, see border.
 |---|---|---|---|
 | x | 0 | number | |
 | y | 0 | number | |
-| dx | 0 | number | shifts the x coordinate with value after has iterated over all coordinates
-| dy | 0 | number | shifts the y coordinate with value after has iterated over all coordinates
+| z | 0 | number | Volume mode only
+| dx | 0 | number | Shifts the x coordinate with value after has iterated over all coordinates |
+| dy | 0 | number | As dx but for the y coordinate |
+| dz | 0 | number | As dx but for the z coordinate. Volume mode only
 | includeInIteration | true | boolean
 
 ```js
@@ -121,6 +123,48 @@ for (const coord of SpiralWalkCoorGen) {
     // first coord x: 60 y: 60
 }
 ```
+  <br>
+
+**VolumeMode**<br>
+If enabled the walk will be on a 2d plain inside of a 3d volume.
+
+| Argument<br>name | Default<br>value | Values |
+|---|---|---|
+| enabled | false | boolean |
+| iterateOverPlan | "xy" | "xy", "xz" or "yz" |
+
+```js
+SpiralWalkCoordGen.VolumeMode = {
+    enabled: true,
+    iterateOverPlan: "xz"
+};
+
+for (const coord of SpiralWalkCoorGen) {
+    console.log(coord);
+}
+```
+<details>
+  <summary>
+    outprint:
+  </summary>
+    { x: 0, y: 0, z: 0 }<br>
+    { x: 0, y: 0, z: -1 }<br>
+    { x: 1, y: 0, z: -1 }<br>
+    { x: 1, y: 0, z: 0 }<br>
+    { x: 1, y: 0, z: 1 }<br>
+    { x: 0, y: 0, z: 1 }<br>
+    { x: -1, y: 0, z: 1 }<br>
+    { x: -1, y: 0, z: 0 }<br>
+    { x: -1, y: 0, z: -1 }<br>
+    { x: -1, y: 0, z: -2 }<br>
+    { x: 0, y: 0, z: -2 }<br>
+    { x: 1, y: 0, z: -2 }<br>
+    { x: 2, y: 0, z: -2 }<br>
+    { x: 2, y: 0, z: -1 }<br>
+    { x: 2, y: 0, z: 0 }<br>
+    { x: 2, y: 0, z: 1 }<br>
+    { x: 2, y: 0, z: 2 }<br>
+</details>
 
   <br>
 **StopCondition**<br>
@@ -143,28 +187,28 @@ SpiralWalkCoordGen.StopCondition = {
 
 **Filter**
 
+Function input come as [destructuring assignment](https://developer.mozilla.org/en-US/docs/Web/JavaScript/Reference/Operators/Destructuring_assignment).
+
 | Argument<br>name | Default<br>value | Values |
 |---|---|---|
 | useCustomFunc | false | boolean |
-| customFunc | (x, y, startX, startY, circleNumber, leftVBorderX, <br> rightVBorderX, topHBorderY, bottomHBorderY) => { return true;} | function |
+| customFunc | ({x, y}) => { return x < y;} | function |
 
-| Custom function<br>argument | |
-|---|---|
-| x | x value to coordinate that is tested |
-| y | y value to coordinate that is tested |
-| startX | x value to the coordinate that spiral started from |
-| startY | y value to the coordinate that spiral started from |
-| circleNumber | Tells which circle you are on, 1 is the first circle around the center |
-| leftBorderX | x value for the coordinates at the left border, the smallest x value |
-| rightBorderX | x value for the coordinates at the right border, the biggest x value |
-| topBorderX | y value for the coordinates at the top border, the smallest y value |
-| bottomBorderX | y value for the coordinates at the bottom border, the biggest y value |
+| Custom function<br>argument | contains | |
+|---|---|---|
+| coord | {x, y, z} | The coordinate that is tested |
+| startCoord | {x, y, z} | The coordinate where the walk started |
+| circleNumber | number | Tells which circle you are on, 1 is the first circle around the center |
+| borderX | {min, max} | The smallest and biggest x value on the border.
+| borderY | {min, max} | The smallest and biggest y value on the border.
+| borderZ | {min, max} | The smallest and biggest z value on the border.
+
 
 ```js
 SpiralWalkCoordGen.Filter = {
     useCustomFunc: true,
-    customFunc: (x, y, sx, sy, c, lX, rX, tY, bY) => {
-        return (lX <= x && x <= rX) || (tY <= y && y <= bY)
+    customFunc: (coord: {x: point}, borderX: {min, max}) => {
+        return min <= point && point <= max;
     }
 }
 ```

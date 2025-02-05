@@ -1,4 +1,3 @@
-import { beforeEach } from "node:test";
 import { SpiralWalkCoordGen } from "./SpiralWalkCoordGen"
 
 
@@ -73,6 +72,12 @@ describe("Testing Spiral Walk as static", () => {
     test("Iteration stops after 10000 coordinates when turning off border check", () => {
         SpiralWalkCoordGen.Reset();
         SpiralWalkCoordGen.StopCondition = { reachedAllBorders: false };
+        SpiralWalkCoordGen.Border = {
+            x: -100,
+            y: -100,
+            width: 201,
+            height: 201
+        }
 
         const result = [];
         for (const coord of SpiralWalkCoordGen) {
@@ -84,6 +89,19 @@ describe("Testing Spiral Walk as static", () => {
         expect(result[9999]).toStrictEqual({x: 50, y: 49});
     })
 
+    test("Custom filter that always return true gives 10 coordinates", () => {
+        SpiralWalkCoordGen.Reset();
+        SpiralWalkCoordGen.Filter = { useCustomFunc: true }
+        SpiralWalkCoordGen.StopCondition = { reachedIterationCount: 10};
+
+        const result = [];
+        for (const coord of SpiralWalkCoordGen) {
+            result.push(coord);
+        }
+
+        expect(result).toHaveLength(10);
+    })
+
     test("Custom filter that always return false gives 0 coordinates", () => {
         SpiralWalkCoordGen.Reset();
         SpiralWalkCoordGen.Filter = {
@@ -92,7 +110,6 @@ describe("Testing Spiral Walk as static", () => {
         }
 
         const result = [];
-
         for (const coord of SpiralWalkCoordGen) {
             result.push(coord);
         }
@@ -111,8 +128,6 @@ describe("Testing Spiral Walk as static", () => {
         for (const coord of SpiralWalkCoordGen) {
             result.push(coord);
         }
-
-        console.log(result);
 
         expect(result).toHaveLength(9);
         expect(result[0]).toStrictEqual({x: 5, y: 5});
@@ -246,6 +261,201 @@ describe("Testing Spiral Walk as static", () => {
         expect(resultA[3].y).toEqual(resultB[3].y);
         expect(resultA[4].x + 20).toEqual(resultB[4].x);
         expect(resultA[4].y).toEqual(resultB[4].y);
+    })
+
+    test("Walk on the xy plane in a volume with z set to 0", () => {
+        SpiralWalkCoordGen.Reset();
+        SpiralWalkCoordGen.VolumeMode = { enabled: true }
+        SpiralWalkCoordGen.StopCondition = { maxCircles: 1 };
+
+        const result = [];
+        for (const coord of SpiralWalkCoordGen) {
+            result.push(coord);
+        }
+
+        expect(result).toHaveLength(9);
+        expect(result[0]).toStrictEqual({x: 0, y: 0, z: 0});
+        expect(result[1]).toStrictEqual({x: 0, y: -1, z: 0});
+        expect(result[2]).toStrictEqual({x: 1, y: -1, z: 0});
+        expect(result[3]).toStrictEqual({x: 1, y: 0, z: 0});
+        expect(result[4]).toStrictEqual({x: 1, y: 1, z: 0});
+        expect(result[5]).toStrictEqual({x: 0, y: 1, z: 0});
+        expect(result[6]).toStrictEqual({x: -1, y: 1, z: 0});
+        expect(result[7]).toStrictEqual({x: -1, y: 0, z: 0});
+        expect(result[8]).toStrictEqual({x: -1, y: -1, z: 0});
+    })
+
+    test("Walk on the xy plane in a volume with z set to non 0", () => {
+        SpiralWalkCoordGen.Reset();
+        SpiralWalkCoordGen.VolumeMode = { enabled: true }
+        SpiralWalkCoordGen.StopCondition = { maxCircles: 1 };
+        SpiralWalkCoordGen.Border = {
+            x: 10, y: 10, z: 10,
+            width: 10, height: 10, depth: 10
+        }
+        SpiralWalkCoordGen.StartCoord = {x: 15, y: 15, z: 18};
+
+        const result = [];
+        for (const coord of SpiralWalkCoordGen) {
+            result.push(coord);
+        }
+
+        expect(result).toHaveLength(9);
+        expect(result[0]).toStrictEqual({x: 15, y: 15, z: 18});
+        expect(result[1]).toStrictEqual({x: 15, y: 14, z: 18});
+        expect(result[2]).toStrictEqual({x: 16, y: 14, z: 18});
+        expect(result[3]).toStrictEqual({x: 16, y: 15, z: 18});
+        expect(result[4]).toStrictEqual({x: 16, y: 16, z: 18});
+        expect(result[5]).toStrictEqual({x: 15, y: 16, z: 18});
+        expect(result[6]).toStrictEqual({x: 14, y: 16, z: 18});
+        expect(result[7]).toStrictEqual({x: 14, y: 15, z: 18});
+        expect(result[8]).toStrictEqual({x: 14, y: 14, z: 18});
+    })
+
+    test("Walk on the xz plane in a volume with y set to non 0", () => {
+        SpiralWalkCoordGen.Reset();
+        SpiralWalkCoordGen.VolumeMode = { enabled: true, iterateOverPlan: "xz" }
+        SpiralWalkCoordGen.StopCondition = { maxCircles: 1 };
+        SpiralWalkCoordGen.Border = {
+            x: 10, y: 10, z: 10,
+            width: 10, height: 10, depth: 10
+        }
+        SpiralWalkCoordGen.StartCoord = {x: 15, y: 15, z: 18};
+
+        const result = [];
+        for (const coord of SpiralWalkCoordGen) {
+            result.push(coord);
+        }
+
+        expect(result).toHaveLength(9);
+        expect(result[0]).toStrictEqual({x: 15, y: 15, z: 18});
+        expect(result[1]).toStrictEqual({x: 15, y: 15, z: 17});
+        expect(result[2]).toStrictEqual({x: 16, y: 15, z: 17});
+        expect(result[3]).toStrictEqual({x: 16, y: 15, z: 18});
+        expect(result[4]).toStrictEqual({x: 16, y: 15, z: 19});
+        expect(result[5]).toStrictEqual({x: 15, y: 15, z: 19});
+        expect(result[6]).toStrictEqual({x: 14, y: 15, z: 19});
+        expect(result[7]).toStrictEqual({x: 14, y: 15, z: 18});
+        expect(result[8]).toStrictEqual({x: 14, y: 15, z: 17});
+    })
+
+    test("Walk on the yz plane in a volume with x set to non 0", () => {
+        SpiralWalkCoordGen.Reset();
+        SpiralWalkCoordGen.VolumeMode = { enabled: true, iterateOverPlan: "yz" }
+        SpiralWalkCoordGen.StopCondition = { maxCircles: 1 };
+        SpiralWalkCoordGen.Border = {
+            x: 10, y: 10, z: 10,
+            width: 10, height: 10, depth: 10
+        }
+        SpiralWalkCoordGen.StartCoord = {x: 12, y: 14, z: 18};
+
+        const result = [];
+        for (const coord of SpiralWalkCoordGen) {
+            result.push(coord);
+        }
+
+        expect(result).toHaveLength(9);
+        expect(result[0]).toStrictEqual({x: 12, y: 14, z: 18});
+        expect(result[1]).toStrictEqual({x: 12, y: 14, z: 17});
+        expect(result[2]).toStrictEqual({x: 12, y: 15, z: 17});
+        expect(result[3]).toStrictEqual({x: 12, y: 15, z: 18});
+        expect(result[4]).toStrictEqual({x: 12, y: 15, z: 19});
+        expect(result[5]).toStrictEqual({x: 12, y: 14, z: 19});
+        expect(result[6]).toStrictEqual({x: 12, y: 13, z: 19});
+        expect(result[7]).toStrictEqual({x: 12, y: 13, z: 18});
+        expect(result[8]).toStrictEqual({x: 12, y: 13, z: 17});
+    })
+
+    test("Ends outside of the border where only including the coords that is inside", () => {
+        SpiralWalkCoordGen.Reset();
+        SpiralWalkCoordGen.Border = {
+            x: 35, y: 35, z: 35,
+            width: 6, height: 4, depth: 10
+        }
+        SpiralWalkCoordGen.VolumeMode = { enabled: true }
+        SpiralWalkCoordGen.StopCondition = { maxCircles: 10, reachedAllBorders: false };
+        SpiralWalkCoordGen.StartCoord = {x: 38, y: 37, z: 40};
+
+        const result = [];
+        for (const coord of SpiralWalkCoordGen) {
+            result.push(coord);
+        }
+
+        expect(result).toHaveLength(24);
+    })
+
+    test("Check if single coordinate value is outside of border", () => {
+        SpiralWalkCoordGen.Reset();
+        SpiralWalkCoordGen.Border = {
+            x: 20, y: 80, z: 100,
+            width: 6, height: 4, depth: 10
+        }
+        SpiralWalkCoordGen.VolumeMode = { enabled: true }
+
+        expect(SpiralWalkCoordGen.Instance.IsOutsideOfBorderMinA({a: 30})).toBe(false);
+        expect(SpiralWalkCoordGen.Instance.IsOutsideOfBorderMinA({a: 19})).toBe(true);
+        expect(SpiralWalkCoordGen.Instance.IsOutsideOfBorderMaxA({a: 22})).toBe(false);
+        expect(SpiralWalkCoordGen.Instance.IsOutsideOfBorderMaxA({a: 27})).toBe(true);
+        expect(SpiralWalkCoordGen.Instance.IsOutsideOfBorderMinB({b: 83})).toBe(false);
+        expect(SpiralWalkCoordGen.Instance.IsOutsideOfBorderMinB({b: 79})).toBe(true);
+        expect(SpiralWalkCoordGen.Instance.IsOutsideOfBorderMaxB({b: 83})).toBe(false);
+        expect(SpiralWalkCoordGen.Instance.IsOutsideOfBorderMaxB({b: 85})).toBe(true);
+
+        SpiralWalkCoordGen.VolumeMode = { iterateOverPlan: "xz" }
+
+        expect(SpiralWalkCoordGen.Instance.IsOutsideOfBorderMinA({a: 30})).toBe(false);
+        expect(SpiralWalkCoordGen.Instance.IsOutsideOfBorderMinA({a: 19})).toBe(true);
+        expect(SpiralWalkCoordGen.Instance.IsOutsideOfBorderMaxA({a: 22})).toBe(false);
+        expect(SpiralWalkCoordGen.Instance.IsOutsideOfBorderMaxA({a: 27})).toBe(true);
+        expect(SpiralWalkCoordGen.Instance.IsOutsideOfBorderMinB({b: 101})).toBe(false);
+        expect(SpiralWalkCoordGen.Instance.IsOutsideOfBorderMinB({b: 99})).toBe(true);
+        expect(SpiralWalkCoordGen.Instance.IsOutsideOfBorderMaxB({b: 108})).toBe(false);
+        expect(SpiralWalkCoordGen.Instance.IsOutsideOfBorderMaxB({b: 111})).toBe(true);
+
+        SpiralWalkCoordGen.VolumeMode = { iterateOverPlan: "yz" }
+
+        expect(SpiralWalkCoordGen.Instance.IsOutsideOfBorderMinA({a: 83})).toBe(false);
+        expect(SpiralWalkCoordGen.Instance.IsOutsideOfBorderMinA({a: 79})).toBe(true);
+        expect(SpiralWalkCoordGen.Instance.IsOutsideOfBorderMaxA({a: 83})).toBe(false);
+        expect(SpiralWalkCoordGen.Instance.IsOutsideOfBorderMaxA({a: 85})).toBe(true);
+        expect(SpiralWalkCoordGen.Instance.IsOutsideOfBorderMinB({b: 101})).toBe(false);
+        expect(SpiralWalkCoordGen.Instance.IsOutsideOfBorderMinB({b: 99})).toBe(true);
+        expect(SpiralWalkCoordGen.Instance.IsOutsideOfBorderMaxB({b: 108})).toBe(false);
+        expect(SpiralWalkCoordGen.Instance.IsOutsideOfBorderMaxB({b: 111})).toBe(true);
+    })
+
+    test("Check if coordinate is inside border", () => {
+        SpiralWalkCoordGen.Reset();
+        SpiralWalkCoordGen.Border = {
+            x: 20, y: 80, z: 100,
+            width: 6, height: 4, depth: 10
+        }
+        SpiralWalkCoordGen.VolumeMode = { enabled: true }
+
+        expect(SpiralWalkCoordGen.Instance.IncludeCoordinate({a: 0, b: 0})).toBe(false);
+        expect(SpiralWalkCoordGen.Instance.IncludeCoordinate({a: 20, b: 79})).toBe(false);
+        expect(SpiralWalkCoordGen.Instance.IncludeCoordinate({a: 20, b: 80})).toBe(true);
+        expect(SpiralWalkCoordGen.Instance.IncludeCoordinate({a: 15, b: 85})).toBe(false);
+        expect(SpiralWalkCoordGen.Instance.IncludeCoordinate({a: 25, b: 85})).toBe(false);
+        expect(SpiralWalkCoordGen.Instance.IncludeCoordinate({a: 25, b: 83})).toBe(true);
+
+        SpiralWalkCoordGen.VolumeMode = { iterateOverPlan: "xz" }
+
+        expect(SpiralWalkCoordGen.Instance.IncludeCoordinate({a: 0, b: 0})).toBe(false);
+        expect(SpiralWalkCoordGen.Instance.IncludeCoordinate({a: 21, b: 105})).toBe(true);
+        expect(SpiralWalkCoordGen.Instance.IncludeCoordinate({a: 19, b: 99})).toBe(false);
+        expect(SpiralWalkCoordGen.Instance.IncludeCoordinate({a: 22, b: 101})).toBe(true);
+        expect(SpiralWalkCoordGen.Instance.IncludeCoordinate({a: 27, b: 105})).toBe(false);
+        expect(SpiralWalkCoordGen.Instance.IncludeCoordinate({a: 30, b: 110})).toBe(false);
+
+        SpiralWalkCoordGen.VolumeMode = { iterateOverPlan: "yz" }
+
+        expect(SpiralWalkCoordGen.Instance.IncludeCoordinate({a: 0, b: 0})).toBe(false);
+        expect(SpiralWalkCoordGen.Instance.IncludeCoordinate({a: 79, b: 101})).toBe(false);
+        expect(SpiralWalkCoordGen.Instance.IncludeCoordinate({a: 80, b: 100})).toBe(true);
+        expect(SpiralWalkCoordGen.Instance.IncludeCoordinate({a: 60, b: 105})).toBe(false);
+        expect(SpiralWalkCoordGen.Instance.IncludeCoordinate({a: 85, b: 111})).toBe(false);
+
     })
 
 })

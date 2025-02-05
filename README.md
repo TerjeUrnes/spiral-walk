@@ -169,7 +169,8 @@ for (const coord of SpiralWalkCoorGen) {
   <br>
 **StopCondition**<br>
 More then one condition can be active. Stops on the first to be fulfilled.<br>
-No active condition should make a infinitive loop.
+No active condition should make a infinitive loop. _reachedIterationCount_ that is not reachable can also give infinitive loop, _includeCoordsOutside_ on border can give that problem if it is set to false.
+
 | Argument<br>name | Default<br>value | Values |
 |---|---|---|
 | maxCircles | false | number or false |
@@ -192,7 +193,7 @@ Function input come as [destructuring assignment](https://developer.mozilla.org/
 | Argument<br>name | Default<br>value | Values |
 |---|---|---|
 | useCustomFunc | false | boolean |
-| customFunc | ({x, y}) => { return x < y;} | function |
+| customFunc | `() => true` | function |
 
 | Custom function<br>argument | contains | |
 |---|---|---|
@@ -207,7 +208,7 @@ Function input come as [destructuring assignment](https://developer.mozilla.org/
 ```js
 SpiralWalkCoordGen.Filter = {
     useCustomFunc: true,
-    customFunc: (coord: {x: point}, borderX: {min, max}) => {
+    customFunc: ({coord: {x: point}, borderX: {min, max}}) => {
         return min <= point && point <= max;
     }
 }

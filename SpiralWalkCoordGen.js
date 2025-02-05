@@ -98,22 +98,28 @@ export class SpiralWalkCoordGen {
         if (y != null) { this._startCoord.y = y; }
         if (z != null) { this._startCoord.z = z; }
         if (dx != null) { 
-            this._startCoord.dx = dx;
             if (x == null) {
+                const oldDx = this._startCoord.dx;
+                this._startCoord.dx = dx - oldDx;
                 this.IncreaseStartCoordXWithDelta();
             }
+            this._startCoord.dx = dx;
         }
         if (dy != null) { 
-            this._startCoord.dy = dy; 
             if (y == null) {
+                const oldDy = this._startCoord.dy;
+                this._startCoord.dy = dy - oldDy;
                 this.IncreaseStartCoordYWithDelta();
             }
+            this._startCoord.dy = dy; 
         }
         if (dz != null) {
-            this._startCoord.dz = dz;
             if (z == null) {
+                const oldDz = this._startCoord.dz;
+                this._startCoord.dz = dz - oldDz;
                 this.IncreaseStartCoordZWithDelta();
             }
+            this._startCoord.dz = dz;
         }
         if (includeInIteration != null) { 
             this._startCoord.includeInIteration = includeInIteration; 
@@ -164,7 +170,6 @@ export class SpiralWalkCoordGen {
         reachedIterationCount = null
     } = {}){
         if (maxCircles != null) {
-            console.log("maxCircles: " + maxCircles );
             this._stopCondition.maxCircles = maxCircles;
         }
         if (reachedFirstBorder != null) {

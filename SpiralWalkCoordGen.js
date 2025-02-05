@@ -332,6 +332,12 @@ export class SpiralWalkCoordGen {
         if (this._stopCondition.reachedIterationCount !== false && this._coordsCount >= this._stopCondition.reachedIterationCount) {
             return false;
         }
+        if (this._border.includeCoordsOutside == false) {
+            if (x < this._border.leftVerticalX || x > this._border.rightVerticalX ||
+                y < this._border.topHorizontalY || y > this._border.bottomHorizontalY) {
+                return false;
+            }
+        }
         if (this._filter.useCustomFunc) {
             return this._filter.customFunc(
                 x, y, this._startCoord.x, this._startCoord.y, this._circleCount,

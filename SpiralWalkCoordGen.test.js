@@ -140,6 +140,30 @@ describe("Testing Spiral Walk as static", () => {
         expect(result[440]).toStrictEqual({x: 10, y: -10});
     })
 
+    test("5 run after each other should give same result", () => {
+        SpiralWalkCoordGen.Reset();
+        SpiralWalkCoordGen.StopCondition = { reachedIterationCount: 6};
+
+        const resultA = [];
+        for (const coord of SpiralWalkCoordGen) {
+            resultA.push(coord);
+        }
+
+        for (let i = 0; i < 4; i++) {
+            let resultB = [];
+            for (const coord of SpiralWalkCoordGen) {
+                resultB.push(coord);
+            }
+    
+            expect(resultA[0]).toStrictEqual(resultB[0]);
+            expect(resultA[1]).toStrictEqual(resultB[1]);
+            expect(resultA[2]).toStrictEqual(resultB[2]);
+            expect(resultA[3]).toStrictEqual(resultB[3]);
+            expect(resultA[4]).toStrictEqual(resultB[4]);
+            expect(resultA[5]).toStrictEqual(resultB[5]);
+        }
+    })
+
     test("Changing only x in StartCoord will shift result to right", () => {
         SpiralWalkCoordGen.Reset();
         SpiralWalkCoordGen.Border = {

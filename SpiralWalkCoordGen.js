@@ -77,8 +77,18 @@ export class SpiralWalkCoordGen {
     } = {}) {
         if (x != null) { this._startCoord.x = x; }
         if (y != null) { this._startCoord.y = y; }
-        if (dx != null) { this._startCoord.dx = dx; }
-        if (dy != null) { this._startCoord.dy = dy; }
+        if (dx != null) { 
+            this._startCoord.dx = dx;
+            if (x == null) {
+                this.IncreaseStartCoordWithDelta();
+            }
+        }
+        if (dy != null) { 
+            this._startCoord.dy = dy; 
+            if (y == null) {
+                this.IncreaseStartCoordWithDelta();
+            }
+        }
         if (includeInIteration != null) { 
             this._startCoord.includeInIteration = includeInIteration; 
         }

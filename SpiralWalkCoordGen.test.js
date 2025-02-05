@@ -175,4 +175,53 @@ describe("Testing Spiral Walk as static", () => {
         expect(resultA[4].y).toEqual(resultB[4].y);
     })
 
+    test("Setting dx to 10 will shift start coord after each iteration has ended", () => {
+        SpiralWalkCoordGen.Reset();
+        SpiralWalkCoordGen.Border = {
+            x: 0,
+            y: 0,
+            width: 100,
+            height: 100
+        }
+        SpiralWalkCoordGen.StopCondition = { reachedIterationCount: 5};
+        SpiralWalkCoordGen.StartCoord = {x: 30, y: 30, dx: 10};
+
+        const resultA = [];
+        for (const coord of SpiralWalkCoordGen) {
+            resultA.push(coord);
+        }
+
+        let resultB = [];
+        for (const coord of SpiralWalkCoordGen) {
+            resultB.push(coord);
+        }
+
+        expect(resultA[0].x + 10).toEqual(resultB[0].x);
+        expect(resultA[0].y).toEqual(resultB[0].y);
+        expect(resultA[1].x + 10).toEqual(resultB[1].x);
+        expect(resultA[1].y).toEqual(resultB[1].y);
+        expect(resultA[2].x + 10).toEqual(resultB[2].x);
+        expect(resultA[2].y).toEqual(resultB[2].y);
+        expect(resultA[3].x + 10).toEqual(resultB[3].x);
+        expect(resultA[3].y).toEqual(resultB[3].y);
+        expect(resultA[4].x + 10).toEqual(resultB[4].x);
+        expect(resultA[4].y).toEqual(resultB[4].y);
+
+        resultB = [];
+        for (const coord of SpiralWalkCoordGen) {
+            resultB.push(coord);
+        }
+
+        expect(resultA[0].x + 20).toEqual(resultB[0].x);
+        expect(resultA[0].y).toEqual(resultB[0].y);
+        expect(resultA[1].x + 20).toEqual(resultB[1].x);
+        expect(resultA[1].y).toEqual(resultB[1].y);
+        expect(resultA[2].x + 20).toEqual(resultB[2].x);
+        expect(resultA[2].y).toEqual(resultB[2].y);
+        expect(resultA[3].x + 20).toEqual(resultB[3].x);
+        expect(resultA[3].y).toEqual(resultB[3].y);
+        expect(resultA[4].x + 20).toEqual(resultB[4].x);
+        expect(resultA[4].y).toEqual(resultB[4].y);
+    })
+
 })

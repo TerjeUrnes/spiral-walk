@@ -77,10 +77,12 @@ All properties has only setters.
 **StartCoord**<br>
 Can be included or excluded from the iteration output. <br>
 Coord outside of border can result in no iteration output, see border.
-| Argument<br>name | Default<br>value | Values |
-|---|---|---|
-| x | 0 | number |
-| y | 0 | number |
+| Argument<br>name | Default<br>value | Values | |
+|---|---|---|---|
+| x | 0 | number | |
+| y | 0 | number | |
+| dx | 0 | number | shifts the x coordinate with value after has iterated over all coordinates
+| dy | 0 | number | shifts the y coordinate with value after has iterated over all coordinates
 | includeInIteration | true | boolean
 
 ```js
@@ -97,6 +99,26 @@ for (const coord of SpiralWalkCoorGen) {
 SpiralWalkCoordGen.StartCoord = { y: 60 }
 for (const coord of SpiralWalkCoorGen) {
     // first coord x: 100 y: 60
+}
+```
+```js
+SpiralWalkCoordGen.StartCoord = { x: 90, y: 50, dx: -5, dy: 5};
+for (const coord of SpiralWalkCoorGen) {
+    // first coord x: 90 y: 50
+}
+for (const coord of SpiralWalkCoorGen) {
+    // first coord x: 85 y: 55
+}
+for (const coord of SpiralWalkCoorGen) {
+    // first coord x: 80 y: 60
+}
+
+SpiralWalkCoordGen.StartCoord = { dx: -10, dy: 0};
+for (const coord of SpiralWalkCoorGen) {
+    // first coord x: 70 y: 60
+}
+for (const coord of SpiralWalkCoorGen) {
+    // first coord x: 60 y: 60
 }
 ```
 

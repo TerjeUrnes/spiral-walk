@@ -656,4 +656,79 @@ describe("Testing Spiral Walk as static", () => {
 
     })
 
+    test("Walk on all xy plans in a cube", () => {
+        SpiralWalkCoordGen.Reset();
+        SpiralWalkCoordGen.Border = {
+            x: 0, y: 0, z: 0,
+            width: 7, height: 7, depth: 7
+        }
+        SpiralWalkCoordGen.VolumeMode = { enabled: true, iterateOverPlan: "xy" }
+        SpiralWalkCoordGen.StartCoord = {x: 3, y: 3, z: 0, dz: 1};
+
+        for (let i = 0; i < 7; i++) {
+            const result = [];
+            for (const coord of SpiralWalkCoordGen) {
+                result.push(coord);
+            }
+            expect(result).toHaveLength(49);
+            expect(result[0]).toStrictEqual({x: 3, y: 3, z: i});
+            expect(result[8]).toStrictEqual({x: 2, y: 2, z: i});
+            expect(result[16]).toStrictEqual({x: 5, y: 5, z: i});
+            expect(result[24]).toStrictEqual({x: 1, y: 1, z: i});
+            expect(result[32]).toStrictEqual({x: 6, y: 2, z: i});
+            expect(result[40]).toStrictEqual({x: 2, y: 6, z: i});
+            expect(result[48]).toStrictEqual({x: 0, y: 0, z: i});
+        }
+    })
+
+    test("Walk on all xz plans in a cube", () => {
+        SpiralWalkCoordGen.Reset();
+        SpiralWalkCoordGen.Border = {
+            x: 0, y: 0, z: 0,
+            width: 7, height: 7, depth: 7
+        }
+        SpiralWalkCoordGen.VolumeMode = { enabled: true, iterateOverPlan: "xz" }
+        SpiralWalkCoordGen.StartCoord = {x: 3, y: 0, z: 3, dy: 1};
+
+        for (let i = 0; i < 7; i++) {
+            const result = [];
+            for (const coord of SpiralWalkCoordGen) {
+                result.push(coord);
+            }
+            expect(result).toHaveLength(49);
+            expect(result[0]).toStrictEqual({x: 3, y: i, z: 3});
+            expect(result[8]).toStrictEqual({x: 2, y: i, z: 2});
+            expect(result[16]).toStrictEqual({x: 5, y: i, z: 5});
+            expect(result[24]).toStrictEqual({x: 1, y: i, z: 1});
+            expect(result[32]).toStrictEqual({x: 6, y: i, z: 2});
+            expect(result[40]).toStrictEqual({x: 2, y: i, z: 6});
+            expect(result[48]).toStrictEqual({x: 0, y: i, z: 0});
+        }
+    })
+
+    test("Walk on all yz plans in a cube", () => {
+        SpiralWalkCoordGen.Reset();
+        SpiralWalkCoordGen.Border = {
+            x: 0, y: 0, z: 0,
+            width: 7, height: 7, depth: 7
+        }
+        SpiralWalkCoordGen.VolumeMode = { enabled: true, iterateOverPlan: "yz" }
+        SpiralWalkCoordGen.StartCoord = {x: 0, y: 3, z: 3, dx: 1};
+
+        for (let i = 0; i < 7; i++) {
+            const result = [];
+            for (const coord of SpiralWalkCoordGen) {
+                result.push(coord);
+            }
+            expect(result).toHaveLength(49);
+            expect(result[0]).toStrictEqual({x: i, y: 3, z: 3});
+            expect(result[8]).toStrictEqual({x: i, y: 2, z: 2});
+            expect(result[16]).toStrictEqual({x: i, y: 5, z: 5});
+            expect(result[24]).toStrictEqual({x: i, y: 1, z: 1});
+            expect(result[32]).toStrictEqual({x: i, y: 6, z: 2});
+            expect(result[40]).toStrictEqual({x: i, y: 2, z: 6});
+            expect(result[48]).toStrictEqual({x: i, y: 0, z: 0});
+        }
+    })
+
 })

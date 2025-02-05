@@ -14,6 +14,8 @@ export class SpiralWalkCoordGen {
     _startCoord = {
         x: 0, 
         y: 0, 
+        dx: 0,
+        dy: 0,
         includeInIteration: true
     }
     _stopCondition = {
@@ -53,11 +55,15 @@ export class SpiralWalkCoordGen {
     static set StartCoord({
         x = null,
         y = null,
+        dx = null,
+        dy = null,
         includeInIteration = null
     } = {}) {
         this.Instance.StartCoord = { 
             x: x, 
             y: y,
+            dx: dx,
+            dy: dy,
             includeInIteration: includeInIteration 
         };
     }
@@ -65,10 +71,14 @@ export class SpiralWalkCoordGen {
     set StartCoord({
         x = null,
         y = null,
+        dx = null,
+        dy = null,
         includeInIteration = null
     } = {}) {
         if (x != null) { this._startCoord.x = x; }
         if (y != null) { this._startCoord.y = y; }
+        if (dx != null) { this._startCoord.dx = dx; }
+        if (dy != null) { this._startCoord.dy = dy; }
         if (includeInIteration != null) { 
             this._startCoord.includeInIteration = includeInIteration; 
         }
@@ -300,7 +310,9 @@ export class SpiralWalkCoordGen {
                 this._spiralBorder.rightX = linePointX;
             }
             this._spiralBorder.topY = linePointY;
-        }      
+        }
+        
+        this.IncreaseStartCoordWithDelta();
     }
 
     IncludeCoordinate({
@@ -354,6 +366,11 @@ export class SpiralWalkCoordGen {
     SetTopAndBottomBorder() {
         this._border.topHorizontalY = this._border.y;
         this._border.bottomHorizontalY = this._border.y + this._border.height;
+    }
+
+    IncreaseStartCoordWithDelta() {
+        this._startCoord.x += this._startCoord.dx;
+        this._startCoord.y += this._startCoord.dy;
     }
 
 }

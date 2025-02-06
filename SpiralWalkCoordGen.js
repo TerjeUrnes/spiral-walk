@@ -271,7 +271,7 @@ export class SpiralWalkCoordGen {
 
     _circleCount;
     _coordsCount;
-    _spiralBorder = {
+    _spiralWalkArea = {
         minA: 0,
         maxA: 0,
         minB: 0,
@@ -298,18 +298,13 @@ export class SpiralWalkCoordGen {
         this._coordsCount = 0;
         const directionA = this._walking.direction == "ccw" ? -1 : 1;
 
-        if (this._startCoord.includeInIteration) {
-            const coord = { a: this._startCoord.a, b: this._startCoord.b};
-            if (this.IncludeCoordinate(coord)) {
-                this._coordsCount++;
-                yield this.ConstructCoord(coord);
-            }
+        var coord = this.GetStartCoordIfIncluded();
+        if (coord != null) {
+            this._coordsCount++;
+            yield coord;
         }
 
-        this._spiralBorder.minA = this._startCoord.a - directionA;
-        this._spiralBorder.maxA = this._spiralBorder.minA;
-        this._spiralBorder.minB = this._startCoord.b - 1;
-        this._spiralBorder.maxB = this._spiralBorder.minB;
+        this.SetTheSpiralWalkArea(directionA);
 
         while (this.CheckStopCondition() == false) {
 
@@ -334,13 +329,7 @@ export class SpiralWalkCoordGen {
                 }
             }
 
-            if (this._walking.direction == "ccw") {
-                this._spiralBorder.minA = linePointA;
-            }
-            else {
-                this._spiralBorder.maxA = linePointA;
-            }
-            this._spiralBorder.maxB = linePointB;
+            this.UpdateSpiralWalkAreaPartA(linePointA, linePointB);
 
             for (let hBottom = 0; hBottom < lineLength; hBottom++, linePointA -= directionA) {
                 const coord = { a: linePointA - directionA, b: linePointB };
@@ -358,18 +347,51 @@ export class SpiralWalkCoordGen {
                 }
             }
 
-            if (this._walking.direction == "cw") {
-                this._spiralBorder.minA = linePointA;
-            }
-            else {
-                this._spiralBorder.maxA = linePointA;
-            }
-            this._spiralBorder.minB = linePointB;
-
-            //console.log(this._circleCount, this._circleCount >= this._stopCondition.maxCircles, this._stopCondition.maxCircles !== false, this._stopCondition.maxCircles);
+            this.UpdateSpiralWalkAreaPartB(linePointA, linePointB);
         }
         
         this.IncreaseStartCoordWithDelta();
+    }
+
+    static Reset() {
+        this._instance = null;
+    }
+
+    GetStartCoordIfIncluded() {
+        if (this._startCoord.includeInIteration) {
+            const coord = { a: this._startCoord.a, b: this._startCoord.b};
+            if (this.IncludeCoordinate(coord)) {
+                return this.ConstructCoord(coord);
+            }
+        }
+        return null;
+    }
+
+    SetTheSpiralWalkArea(directionA) {
+        this._spiralWalkArea.minA = this._startCoord.a - directionA;
+        this._spiralWalkArea.maxA = this._spiralWalkArea.minA;
+        this._spiralWalkArea.minB = this._startCoord.b - 1;
+        this._spiralWalkArea.maxB = this._spiralWalkArea.minB;
+    }
+
+    UpdateSpiralWalkAreaPartA(linePointA, linePointB) {
+        if (this._walking.direction == "ccw") {
+            this._spiralWalkArea.minA = linePointA;
+        }
+        else {
+            this._spiralWalkArea.maxA = linePointA;
+        }
+        this._spiralWalkArea.maxB = linePointB;
+    }
+
+    UpdateSpiralWalkAreaPartB(linePointA, linePointB) {
+        if (this._walking.direction == "cw") {
+            this._spiralWalkArea.minA = linePointA;
+        }
+        else {
+            this._spiralWalkArea.maxA = linePointA;
+        }
+        this._spiralWalkArea.minB = linePointB;
     }
 
     IncludeCoordinate({
@@ -389,6 +411,7 @@ export class SpiralWalkCoordGen {
             const coord = this.ConstructCoord({a: a, b: b});
             return this._filter.customFunc({
                 coord: coord,
+                planeCoord: {a: a, b: b},
                 startCoord: this._startCoord,
                 circleNumber: this._circleCount,
                 borderX: {min: this._border.leftPlaneMinX, max: this._border.rightPlaneMaxX},
@@ -461,7 +484,7 @@ export class SpiralWalkCoordGen {
         if (this._volumeMode.enabled && this._volumeMode.iterateOverPlan == "yz") {
             planeBorder = this._border.topPlaneMinY;
         }
-        return this._spiralBorder.minA <= planeBorder;
+        return this._spiralWalkArea.minA <= planeBorder;
     }
 
     HasReachedBorderMaxA() {
@@ -469,7 +492,7 @@ export class SpiralWalkCoordGen {
         if (this._volumeMode.enabled && this._volumeMode.iterateOverPlan == "yz") {
             planeBorder = this._border.bottomPlaneMaxY;
         }
-        return this._spiralBorder.maxA >= planeBorder;
+        return this._spiralWalkArea.maxA >= planeBorder;
     }
 
     HasReachedBorderMinB() {
@@ -478,7 +501,7 @@ export class SpiralWalkCoordGen {
             (this._volumeMode.iterateOverPlan == "xz" || this._volumeMode.iterateOverPlan == "yz")) {
             planeBorder = this._border.frontPlaneMinZ;
         }
-        return this._spiralBorder.minB <= planeBorder;
+        return this._spiralWalkArea.minB <= planeBorder;
     }
 
     HasReachedBorderMaxB() {
@@ -487,11 +510,7 @@ export class SpiralWalkCoordGen {
             (this._volumeMode.iterateOverPlan == "xz" || this._volumeMode.iterateOverPlan == "yz")) {
             planeBorder = this._border.backPlaneMaxZ;
         }
-        return this._spiralBorder.maxB >= planeBorder;
-    }
-
-    static Reset() {
-        this._instance = null;
+        return this._spiralWalkArea.maxB >= planeBorder;
     }
 
     SetLeftAndRightBorder() {

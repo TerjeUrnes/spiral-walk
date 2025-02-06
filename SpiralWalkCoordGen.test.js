@@ -731,4 +731,36 @@ describe("Testing Spiral Walk as static", () => {
         }
     })
 
+    test("Test setting the borders directly", () => {
+        SpiralWalkCoordGen.Reset();
+        SpiralWalkCoordGen.VolumeMode = { enabled: true }
+        SpiralWalkCoordGen.StartCoord = {x: 50, y: 50, z: 50};
+
+        SpiralWalkCoordGen.Border = {
+            x: 30, y: 30, z: 30,
+            width: 41, height: 41, depth: 41
+        }
+
+        let result = [];
+        for (const coord of SpiralWalkCoordGen) {
+            result.push(coord);
+        }
+        expect(result).toHaveLength(1681);
+        expect(result[1680]).toStrictEqual({x: 30, y: 30, z: 50});
+
+        SpiralWalkCoordGen.Border = {
+            leftPlaneMinX: 20, topPlaneMinY: 20, frontPlaneMinZ: 20,
+            rightPlaneMaxX: 80, bottomPlaneMaxY: 80, backPlaneMaxZ: 80,
+        }
+
+        result = [];
+        for (const coord of SpiralWalkCoordGen) {
+            result.push(coord);
+        }
+        expect(result).toHaveLength(3721);
+        expect(result[1680]).toStrictEqual({x: 30, y: 30, z: 50});
+        expect(result[3720]).toStrictEqual({x: 20, y: 20, z: 50});
+
+    })
+
 })

@@ -3,7 +3,7 @@
 
 # spiral-walk
 
-Tool for generating coordinates for spiral walking in a 2D matrix.
+Tool for generating coordinates for spiral walking in a 2D plane. The plane can be a 2d matrix (x, y) or a slice (slabs with one cell thickness) of a 3d volume (x, y, z)
 
 ```js
 // Use as static
@@ -197,7 +197,8 @@ Function input come as [destructuring assignment](https://developer.mozilla.org/
 
 | Custom function<br>argument | contains | |
 |---|---|---|
-| coord | {x, y, z} | The coordinate that is tested |
+| coord | {x, y, z} | The coordinate that is tested, in matrix/volume coords|
+| planeCoord | {a, b} | The coordinate on the plane, identical with x and y in coord if it is in the xy plane.
 | startCoord | {x, y, z} | The coordinate where the walk started |
 | circleNumber | number | Tells which circle you are on, 1 is the first circle around the center |
 | borderX | {min, max} | The smallest and biggest x value on the border.

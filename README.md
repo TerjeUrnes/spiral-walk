@@ -1,7 +1,9 @@
-<img src="spiral-walk-example.webp" width="100%">
+<img src="readme-img/spiral-walk-example.webp" width="100%">
 
 
-# Spiral Walk <br> Coordinate Generator
+# Spiral Walk <br> Coordinate Generator <br> on a 2D Plane in a 2D or 3D World
+
+  <br>
 
 Tool for generating coordinates for spiral walking in a 2D plane. The plane can be a 2d matrix (x, y) or a slice (slabs with one cell thickness) of a 3d volume (x, y, z)
 
@@ -64,6 +66,10 @@ for (const coord of generator) {
   <br>
 > [!CAUTION]
 > It does not check the input. The user of this class is responsible for that it is correct.
+  <br>
+
+<img src="readme-img/spiral-walk-example-3.webp" width="100%">
+The numbers are the indexes for the generated output.
 
 
   <br>
@@ -77,6 +83,7 @@ All properties has only setters.
 **StartCoord**<br>
 Can be included or excluded from the iteration output. <br>
 Coord outside of border can result in no iteration output, see border.
+All values here can be float, will be truncated when used and all output will be integers. A delta less then 1 can result in the same coordinates. x = 1.9 gives the value 1, adding dx = 0.2 gives the value 2, adding dx again gives the value 2 one more time.
 | Argument<br>name | Default<br>value | Values | |
 |---|---|---|---|
 | x | 0 | number | |
@@ -222,7 +229,7 @@ SpiralWalkCoordGen.Filter = {
     From a unit test where using this function:
   </summary>
   The values are the indexes. The border is 7x7. includeCoordsOutside is set to true.<br>
-  <img src="spiral-walk-example-2.webp" width=60%>
+  <img src="readme-img/spiral-walk-example-2.webp" width=60%>
 </details>
 
   <br>

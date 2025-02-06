@@ -25,6 +25,9 @@ export class SpiralWalkCoordGen {
         dy: 0,
         dz: 0,
         includeInIteration: true,
+        intX: 0,
+        intY: 0,
+        intZ: 0,
         a: 0,
         b: 0
     }
@@ -42,9 +45,18 @@ export class SpiralWalkCoordGen {
         dz = null,
         includeInIteration = null
     } = {}) {
-        if (x != null) { this._startCoord.x = x; }
-        if (y != null) { this._startCoord.y = y; }
-        if (z != null) { this._startCoord.z = z; }
+        if (x != null) { 
+            this._startCoord.x = x; 
+            this._startCoord.intX = Math.floor(x);
+        }
+        if (y != null) {
+            this._startCoord.y = y;
+            this._startCoord.intY = Math.floor(y);
+        }
+        if (z != null) {
+            this._startCoord.z = z;
+            this._startCoord.intZ = Math.floor(z);
+        }
         if (dx != null) { 
             if (x == null) {
                 const oldDx = this._startCoord.dx;
@@ -298,59 +310,70 @@ export class SpiralWalkCoordGen {
         this._coordsCount = 0;
         const directionA = this._walking.direction == "ccw" ? -1 : 1;
 
-        var coord = this.GetStartCoordIfIncluded();
-        if (coord != null) {
-            this._coordsCount++;
-            yield coord;
+        do {
+            var coord = this.GetStartCoordIfIncluded();
+            if (coord != null) {
+                this._coordsCount++;
+                yield coord;
+            }
+
+            this.SetTheSpiralWalkArea(directionA);
+
+            while (this.CheckStopCondition() == false) {
+
+                this._circleCount++;
+                const lineLength = this._circleCount * 2;
+                let linePointA = this._startCoord.a - this._circleCount * directionA;
+                let linePointB = this._startCoord.b - this._circleCount;
+    
+                for (let hTop = 0; hTop < lineLength; hTop++, linePointA += directionA) {
+                    const coord = { a: linePointA + directionA, b: linePointB };
+                    if (this.IncludeCoordinate(coord)) {
+                        this._coordsCount++;
+                        yield this.ConstructCoord(coord);
+                    }
+                }
+    
+                for (let vRight = 0; vRight < lineLength; vRight++, linePointB++) {
+                    const coord = { a: linePointA, b: linePointB + 1 };
+                    if (this.IncludeCoordinate(coord)) {
+                        this._coordsCount++;
+                        yield this.ConstructCoord(coord);
+                    }
+                }
+    
+                this.UpdateSpiralWalkAreaPartA(linePointA, linePointB);
+    
+                for (let hBottom = 0; hBottom < lineLength; hBottom++, linePointA -= directionA) {
+                    const coord = { a: linePointA - directionA, b: linePointB };
+                    if (this.IncludeCoordinate(coord)) {
+                        this._coordsCount++;
+                        yield this.ConstructCoord(coord);
+                    }
+                }
+    
+                for (let vLeft = 0; vLeft < lineLength; vLeft++, linePointB--) {
+                    const coord = { a: linePointA, b: linePointB - 1 };
+                    if (this.IncludeCoordinate(coord)) {
+                        this._coordsCount++;
+                        yield this.ConstructCoord(coord);
+                    }
+                }
+    
+                this.UpdateSpiralWalkAreaPartB(linePointA, linePointB);
+            }
+        }
+        while (this.CheckIfShouldRunAgain())
+    }
+
+    CheckIfShouldRunAgain() {
+
+        if(this._startCoord.dx != 0 || this._startCoord.dy != 0 || this._startCoord.dz != 0) {
+
+            this.IncreaseStartCoordWithDelta();
         }
 
-        this.SetTheSpiralWalkArea(directionA);
-
-        while (this.CheckStopCondition() == false) {
-
-            this._circleCount++;
-            const lineLength = this._circleCount * 2;
-            let linePointA = this._startCoord.a - this._circleCount * directionA;
-            let linePointB = this._startCoord.b - this._circleCount;
-
-            for (let hTop = 0; hTop < lineLength; hTop++, linePointA += directionA) {
-                const coord = { a: linePointA + directionA, b: linePointB };
-                if (this.IncludeCoordinate(coord)) {
-                    this._coordsCount++;
-                    yield this.ConstructCoord(coord);
-                }
-            }
-
-            for (let vRight = 0; vRight < lineLength; vRight++, linePointB++) {
-                const coord = { a: linePointA, b: linePointB + 1 };
-                if (this.IncludeCoordinate(coord)) {
-                    this._coordsCount++;
-                    yield this.ConstructCoord(coord);
-                }
-            }
-
-            this.UpdateSpiralWalkAreaPartA(linePointA, linePointB);
-
-            for (let hBottom = 0; hBottom < lineLength; hBottom++, linePointA -= directionA) {
-                const coord = { a: linePointA - directionA, b: linePointB };
-                if (this.IncludeCoordinate(coord)) {
-                    this._coordsCount++;
-                    yield this.ConstructCoord(coord);
-                }
-            }
-
-            for (let vLeft = 0; vLeft < lineLength; vLeft++, linePointB--) {
-                const coord = { a: linePointA, b: linePointB - 1 };
-                if (this.IncludeCoordinate(coord)) {
-                    this._coordsCount++;
-                    yield this.ConstructCoord(coord);
-                }
-            }
-
-            this.UpdateSpiralWalkAreaPartB(linePointA, linePointB);
-        }
-        
-        this.IncreaseStartCoordWithDelta();
+        return false;
     }
 
     static Reset() {
@@ -537,47 +560,50 @@ export class SpiralWalkCoordGen {
 
     IncreaseStartCoordXWithDelta() {
         this._startCoord.x += this._startCoord.dx;
+        this._startCoord.intX = this._startCoord.x;
     }
 
     IncreaseStartCoordYWithDelta() {
         this._startCoord.y += this._startCoord.dy;
+        this._startCoord.intY = this._startCoord.y;
     }
 
     IncreaseStartCoordZWithDelta() {
         this._startCoord.z += this._startCoord.dz;
+        this._startCoord.intZ = this._startCoord.z;
     }
 
     UpdateStartCoordAB() {
         if (this._volumeMode.enabled) {
             if (this._volumeMode.iterateOverPlan == "xy") {
-                this._startCoord.a = this._startCoord.x;
-                this._startCoord.b = this._startCoord.y;
+                this._startCoord.a = this._startCoord.intX;
+                this._startCoord.b = this._startCoord.intY;
             }
             else if (this._volumeMode.iterateOverPlan == "xz") {
-                this._startCoord.a = this._startCoord.x;
-                this._startCoord.b = this._startCoord.z;
+                this._startCoord.a = this._startCoord.intX;
+                this._startCoord.b = this._startCoord.intZ;
             }
             else if (this._volumeMode.iterateOverPlan == "yz") {
-                this._startCoord.a = this._startCoord.y;
-                this._startCoord.b = this._startCoord.z;
+                this._startCoord.a = this._startCoord.intY;
+                this._startCoord.b = this._startCoord.intZ;
             } 
         }
         else {
-            this._startCoord.a = this._startCoord.x;
-            this._startCoord.b = this._startCoord.y;
+            this._startCoord.a = this._startCoord.intX;
+            this._startCoord.b = this._startCoord.intY;
         }
     }
 
     ConstructCoord({ a = null, b = null} = {}) {
         if (this._volumeMode.enabled) {
             if (this._volumeMode.iterateOverPlan == "xy") {
-                return { x: a, y: b, z: this._startCoord.z }
+                return { x: a, y: b, z: this._startCoord.intZ }
             }
             else if (this._volumeMode.iterateOverPlan == "xz") {
-                return { x: a, y: this._startCoord.y, z: b }
+                return { x: a, y: this._startCoord.intY, z: b }
             }
             else if (this._volumeMode.iterateOverPlan == "yz") {
-                return { x: this._startCoord.x, y: a, z: b }
+                return { x: this._startCoord.intX, y: a, z: b }
             } 
         }
         return { x: a, y: b };

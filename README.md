@@ -171,6 +171,9 @@ for (const coord of SpiralWalkCoorGen) {
 More then one condition can be active. Stops on the first to be fulfilled.<br>
 No active condition should make a infinitive loop. _reachedIterationCount_ that is not reachable can also give infinitive loop, _includeCoordsOutside_ on border can give that problem if it is set to false.
 
+> [!WARNING]  
+> This can give a infinity loop if not set correctly.
+
 | Argument<br>name | Default<br>value | Values |
 |---|---|---|
 | maxCircles | false | number or false |

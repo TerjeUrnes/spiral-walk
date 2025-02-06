@@ -1,7 +1,7 @@
-<img src="spiral-walk-example.webp" width="500">
+<img src="spiral-walk-example.webp" width="100%">
 
 
-# spiral-walk
+# Spiral Walk <br> Coordinate Generator
 
 Tool for generating coordinates for spiral walking in a 2D plane. The plane can be a 2d matrix (x, y) or a slice (slabs with one cell thickness) of a 3d volume (x, y, z)
 
@@ -219,7 +219,7 @@ SpiralWalkCoordGen.Filter = {
     From a unit test where using this function:
   </summary>
   The values are the indexes. The border is 7x7. includeCoordsOutside is set to true.<br>
-  <img src="spiral-walk-example-2.webp" width=450>
+  <img src="spiral-walk-example-2.webp" width=60%>
 </details>
 
   <br>

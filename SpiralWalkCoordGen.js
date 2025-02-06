@@ -2,6 +2,8 @@
 
 export class SpiralWalkCoordGen {
 
+    //#region Static instance 
+
     static _instance = null;
 
     static get Instance() {
@@ -10,6 +12,10 @@ export class SpiralWalkCoordGen {
         }
         return this._instance;
     }
+
+    //#endregion
+
+    //#region StartCoord - property and field 
 
     _startCoord = {
         x: 0, 
@@ -22,67 +28,9 @@ export class SpiralWalkCoordGen {
         a: 0,
         b: 0
     }
-    _volumeMode = {
-        enabled: false,
-        iterateOverPlan: "xy"
-    }
-    _stopCondition = {
-        maxCircles: false, 
-        reachedFirstBorder: false, 
-        reachedAllBorders: true, 
-        reachedIterationCount: 10000
-    }
-    _filter = {
-        useCustomFunc: false,
-        customFunc: () => { return true; }    
-    }
-    _border = {
-        x: -10,
-        y: -10,
-        z: -10,
-        width: 21,
-        height: 21,
-        depth: 21,
-        includeCoordsOutside: false,
-        topPlaneMinY: -10,
-        bottomPlaneMaxY: 10,
-        leftPlaneMinX: -10,
-        rightPlaneMaxX: 10,
-        frontPlaneMinZ: -10,
-        backPlaneMaxZ: 10
-    }
-    _walking = {
-        direction: "cw"
-    }
 
-    _circleCount;
-    _coordsCount;
-    _spiralBorder = {
-        minA: 0,
-        maxA: 0,
-        minB: 0,
-        maxB: 0
-    }
-    _insideBoarderSize;
-
-    static set StartCoord({
-        x = null,
-        y = null,
-        z = null,
-        dx = null,
-        dy = null,
-        dz = null,
-        includeInIteration = null
-    } = {}) {
-        this.Instance.StartCoord = { 
-            x: x, 
-            y: y,
-            z: z,
-            dx: dx,
-            dy: dy,
-            dz: dz,
-            includeInIteration: includeInIteration 
-        };
+    static set StartCoord(args) {
+        this.Instance.StartCoord = args;
     }
     
     set StartCoord({
@@ -127,14 +75,17 @@ export class SpiralWalkCoordGen {
         this.UpdateStartCoordAB();
     }
 
-    static set VolumeMode({
-        enabled = null,
-        iterateOverPlan = null
-    } = {}) {
-        this.Instance.VolumeMode = {
-            enabled: enabled,
-            iterateOverPlan: iterateOverPlan
-        };
+    //#endregion
+
+    //#region VolumeMode - property and field 
+
+    _volumeMode = {
+        enabled: false,
+        iterateOverPlan: "xy"
+    }
+
+    static set VolumeMode(args) {
+        this.Instance.VolumeMode = args;
     }
 
     set VolumeMode({
@@ -149,18 +100,19 @@ export class SpiralWalkCoordGen {
         }
     }
 
-    static set StopCondition({
-        maxCircles = null,
-        reachedFirstBorder = null,
-        reachedAllBorders = null,
-        reachedIterationCount = null
-    } = {}){
-        this.Instance.StopCondition = {
-            maxCircles: maxCircles,
-            reachedFirstBorder: reachedFirstBorder,
-            reachedAllBorders: reachedAllBorders,
-            reachedIterationCount: reachedIterationCount
-        };
+    //#endregion
+
+    //#region Stop Condition - property and field 
+
+    _stopCondition = {
+        maxCircles: false, 
+        reachedFirstBorder: false, 
+        reachedAllBorders: true, 
+        reachedIterationCount: 10000
+    }
+
+    static set StopCondition(args){
+        this.Instance.StopCondition = args;
     }
     
     set StopCondition({
@@ -183,14 +135,17 @@ export class SpiralWalkCoordGen {
         }
     }
 
-    static set Filter({
-        useCustomFunc = null,
-        customFunc = null
-    } = {}){
-        this.Instance.Filter = {
-            useCustomFunc: useCustomFunc,
-            customFunc: customFunc
-        };
+    //#endregion
+
+    //#region Filter - property and field 
+
+    _filter = {
+        useCustomFunc: false,
+        customFunc: () => { return true; }    
+    }
+
+    static set Filter(args){
+        this.Instance.Filter = args
     }
 
     set Filter({
@@ -205,36 +160,28 @@ export class SpiralWalkCoordGen {
         }
     }
 
-    static set Border({
-        x = null,
-        y = null,
-        z = null,
-        width = null,
-        height = null,
-        depth = null,
-        includeCoordsOutside = null,
-        leftPlaneMinX = null,
-        rightPlaneMaxX = null,
-        topPlaneMinY = null,
-        bottomPlaneMaxY = null,
-        frontPlaneMinZ = null,
-        backPlaneMaxZ = null
-    } = {}){
-        this.Instance.Border = {
-            x: x,
-            y: y,
-            z: z,
-            width: width,
-            height: height,
-            depth: depth,
-            includeCoordsOutside: includeCoordsOutside,
-            leftPlaneMinX: leftPlaneMinX,
-            rightPlaneMaxX: rightPlaneMaxX,
-            topPlaneMinY: topPlaneMinY,
-            bottomPlaneMaxY: bottomPlaneMaxY,
-            frontPlaneMinZ: frontPlaneMinZ,
-            backPlaneMaxZ: backPlaneMaxZ
-        };
+    //#endregion
+
+    //#region Border - property and field 
+
+    _border = {
+        x: -10,
+        y: -10,
+        z: -10,
+        width: 21,
+        height: 21,
+        depth: 21,
+        includeCoordsOutside: false,
+        topPlaneMinY: -10,
+        bottomPlaneMaxY: 10,
+        leftPlaneMinX: -10,
+        rightPlaneMaxX: 10,
+        frontPlaneMinZ: -10,
+        backPlaneMaxZ: 10
+    }
+
+    static set Border(args){
+        this.Instance.Border = args;
     }
 
     set Border({
@@ -300,12 +247,16 @@ export class SpiralWalkCoordGen {
         this.CalculateBorderArea();
     }
 
-    static set Walking({
-        direction = null
-    } = {}){
-        this.Instance.Walking = {
-            direction: direction
-        };
+    //#endregion
+
+    //#region Walking - property and field 
+
+    _walking = {
+        direction: "cw"
+    }
+
+    static set Walking(args){
+        this.Instance.Walking = args;
     }
 
     set Walking({
@@ -315,6 +266,18 @@ export class SpiralWalkCoordGen {
             this._walking.direction = direction;
         }
     }
+
+    //#endregion
+
+    _circleCount;
+    _coordsCount;
+    _spiralBorder = {
+        minA: 0,
+        maxA: 0,
+        minB: 0,
+        maxB: 0
+    }
+    _insideBoarderSize;
 
         // Line 1 - 12
         //          2 9 9 9 9 9 9

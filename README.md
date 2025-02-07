@@ -211,6 +211,7 @@ Function input come as [destructuring assignment](https://developer.mozilla.org/
 | planeCoord | {a, b} | The coordinate on the plane, identical with x and y in coord if it is in the xy plane.
 | startCoord | {x, y, z} | The coordinate where the walk started |
 | circleNumber | number | Tells which circle you are on, 1 is the first circle around the center |
+| planeNumber | number | Tells which plane it walks on, 1 is the first plane |
 | borderX | {min, max} | The smallest and biggest x value on the border.
 | borderY | {min, max} | The smallest and biggest y value on the border.
 | borderZ | {min, max} | The smallest and biggest z value on the border.

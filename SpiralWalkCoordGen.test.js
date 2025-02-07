@@ -56,6 +56,130 @@ describe("Testing Spiral Walk as static", () => {
         expect(result[8]).toStrictEqual({x: 4, y: 4});
     })
 
+    test("Testing one circle with float coordinates", () => {
+        SpiralWalkCoordGen.Reset();
+        SpiralWalkCoordGen.StopCondition = { maxCircles: 1};
+        SpiralWalkCoordGen.StartCoord = {x: 2.3, y: -3.7};
+
+        const result = [];
+
+        for (const coord of SpiralWalkCoordGen) {
+            result.push(coord);
+        }
+
+        expect(result).toHaveLength(9);
+        expect(result[0]).toStrictEqual({x: 2, y: -4});
+        expect(result[1]).toStrictEqual({x: 2, y: -5});
+        expect(result[2]).toStrictEqual({x: 3, y: -5});
+        expect(result[3]).toStrictEqual({x: 3, y: -4});
+        expect(result[4]).toStrictEqual({x: 3, y: -3});
+        expect(result[5]).toStrictEqual({x: 2, y: -3});
+        expect(result[6]).toStrictEqual({x: 1, y: -3});
+        expect(result[7]).toStrictEqual({x: 1, y: -4});
+        expect(result[8]).toStrictEqual({x: 1, y: -5});
+    })
+
+    test("Testing one circle on a xz plane", () => {
+        SpiralWalkCoordGen.Reset();
+        SpiralWalkCoordGen.StopCondition = { maxCircles: 1 };
+        SpiralWalkCoordGen.VolumeMode = { enabled: true, iterateOverPlan: "xz" };
+
+        const result = [];
+        for (const coord of SpiralWalkCoordGen) {
+            result.push(coord);
+        }
+
+        expect(result).toHaveLength(9);
+        expect(result[0]).toStrictEqual({x: 0, y: 0, z: 0});
+        expect(result[1]).toStrictEqual({x: 0, y: 0, z: -1});
+        expect(result[2]).toStrictEqual({x: 1, y: 0, z: -1});
+        expect(result[3]).toStrictEqual({x: 1, y: 0, z: 0});
+        expect(result[4]).toStrictEqual({x: 1, y: 0, z: 1});
+        expect(result[5]).toStrictEqual({x: 0, y: 0, z: 1});
+        expect(result[6]).toStrictEqual({x: -1, y: 0, z: 1});
+        expect(result[7]).toStrictEqual({x: -1, y: 0, z: 0});
+        expect(result[8]).toStrictEqual({x: -1, y: 0, z: -1});
+
+    })
+
+    test("Testing one circle on a yz plane", () => {
+        SpiralWalkCoordGen.Reset();
+        SpiralWalkCoordGen.StopCondition = { maxCircles: 1 };
+        SpiralWalkCoordGen.VolumeMode = { enabled: true, iterateOverPlan: "yz" };
+        SpiralWalkCoordGen.StartCoord = {x: 120, y: 160, z: 120};
+        SpiralWalkCoordGen.Border = {
+            x: 119,
+            y: 150,
+            z: 110,
+            width: 3,
+            height: 21,
+            depth: 21
+        }
+
+        const result = [];
+        for (const coord of SpiralWalkCoordGen) {
+            result.push(coord);
+        }
+
+        expect(result).toHaveLength(9);
+        expect(result[0]).toStrictEqual({x: 120, y: 160, z: 120});
+        expect(result[1]).toStrictEqual({x: 120, y: 160, z: 119});
+        expect(result[2]).toStrictEqual({x: 120, y: 161, z: 119});
+        expect(result[3]).toStrictEqual({x: 120, y: 161, z: 120});
+        expect(result[4]).toStrictEqual({x: 120, y: 161, z: 121});
+        expect(result[5]).toStrictEqual({x: 120, y: 160, z: 121});
+        expect(result[6]).toStrictEqual({x: 120, y: 159, z: 121});
+        expect(result[7]).toStrictEqual({x: 120, y: 159, z: 120});
+        expect(result[8]).toStrictEqual({x: 120, y: 159, z: 119});
+    })
+
+    test("Testing one circle on 2 plane in a volume", () => {
+        SpiralWalkCoordGen.Reset();
+        SpiralWalkCoordGen.StopCondition = { maxCircles: 1, maxPlanes: 2};
+        SpiralWalkCoordGen.VolumeMode = { enabled: true }
+        SpiralWalkCoordGen.StartCoord = {dz: 1};
+
+        const result = [];
+        for (const coord of SpiralWalkCoordGen) {
+            result.push(coord);
+        }
+
+        expect(result).toHaveLength(18);
+        expect(result[0]).toStrictEqual({x: 0, y: 0, z: 0});
+        expect(result[2]).toStrictEqual({x: 1, y: -1, z: 0});
+        expect(result[4]).toStrictEqual({x: 1, y: 1, z: 0});
+        expect(result[6]).toStrictEqual({x: -1, y: 1, z: 0});
+        expect(result[8]).toStrictEqual({x: -1, y: -1, z: 0});
+        expect(result[10]).toStrictEqual({x: 0, y: -1, z: 1});
+        expect(result[12]).toStrictEqual({x: 1, y: 0, z: 1});
+        expect(result[14]).toStrictEqual({x: 0, y: 1, z: 1});
+        expect(result[16]).toStrictEqual({x: -1, y: 0, z: 1});
+    })
+
+    test("Spiral goes ccw on circle when changing direction", () => {
+        SpiralWalkCoordGen.Reset();
+        SpiralWalkCoordGen.StopCondition = { maxCircles: 1};
+        SpiralWalkCoordGen.StartCoord = {x: 5, y: 5};
+        SpiralWalkCoordGen.Walking = {direction: "ccw"};
+
+        const result = [];
+
+        for (const coord of SpiralWalkCoordGen) {
+            result.push(coord);
+        }
+
+        expect(result).toHaveLength(9);
+        expect(result[0]).toStrictEqual({x: 5, y: 5});
+        expect(result[1]).toStrictEqual({x: 5, y: 4});
+        expect(result[2]).toStrictEqual({x: 4, y: 4});
+        expect(result[3]).toStrictEqual({x: 4, y: 5});
+        expect(result[4]).toStrictEqual({x: 4, y: 6});
+        expect(result[5]).toStrictEqual({x: 5, y: 6});
+        expect(result[6]).toStrictEqual({x: 6, y: 6});
+        expect(result[7]).toStrictEqual({x: 6, y: 5});
+        expect(result[8]).toStrictEqual({x: 6, y: 4});
+    })
+
     test("Iteration stops after 441 coordinates, hits all boarder at same time", () => {
         SpiralWalkCoordGen.Reset();
 
@@ -67,6 +191,20 @@ describe("Testing Spiral Walk as static", () => {
         expect(result).toHaveLength(441);
         expect(result[0]).toStrictEqual({x: 0, y: 0});
         expect(result[440]).toStrictEqual({x: -10, y: -10});
+    })
+
+    test("Iteration stops after 441 coordinates in ccw direction", () => {
+        SpiralWalkCoordGen.Reset();
+        SpiralWalkCoordGen.Walking = { direction: "ccw" };
+
+        const result = [];
+        for (const coord of SpiralWalkCoordGen) {
+            result.push(coord);
+        }
+
+        expect(result).toHaveLength(441);
+        expect(result[0]).toStrictEqual({x: 0, y: 0});
+        expect(result[440]).toStrictEqual({x: 10, y: -10});
     })
 
     test("Iteration stops after 10000 coordinates when turning off border check", () => {
@@ -82,6 +220,75 @@ describe("Testing Spiral Walk as static", () => {
         expect(result).toHaveLength(10000);
         expect(result[0]).toStrictEqual({x: 0, y: 0});
         expect(result[9999]).toStrictEqual({x: 50, y: 49});
+    })
+
+    test("Iteration stops after 10mill coordinates when turning off border check", () => {
+        SpiralWalkCoordGen.Reset();
+        SpiralWalkCoordGen.StopCondition = { 
+            reachedAllBorders: false, 
+            reachedIterationCount: 10000000 
+        };
+        SpiralWalkCoordGen.Border = { includeCoordsOutside: true };
+
+        const result = [];
+        for (const coord of SpiralWalkCoordGen) {
+            result.push(coord);
+        }
+
+        expect(result).toHaveLength(10000000);
+        expect(result[0]).toStrictEqual({x: 0, y: 0});
+        expect(result[9999999]).toStrictEqual({x: -174, y: 1581});
+    })
+
+    test("Iteration stops after reaching all borders in a cube", () => {
+        SpiralWalkCoordGen.Reset();
+        SpiralWalkCoordGen.VolumeMode = { enabled: true };
+        SpiralWalkCoordGen.StartCoord = {x: 3, y: 3, z: 1, dz: 1};
+        SpiralWalkCoordGen.Border = {
+            x: 1,
+            y: 1,
+            z: 1,
+            width: 5,
+            height: 5,
+            depth: 5
+        }
+
+        const result = [];
+        for (const coord of SpiralWalkCoordGen) {
+            result.push(coord);
+        }
+
+        expect(result).toHaveLength(125);
+        expect(result[3]).toStrictEqual({x: 4, y: 3, z: 1});
+        expect(result[16]).toStrictEqual({x: 5, y: 5, z: 1});
+        expect(result[24]).toStrictEqual({x: 1, y: 1, z: 1});
+        expect(result[25]).toStrictEqual({x: 3, y: 3, z: 2});
+        expect(result[42]).toStrictEqual({x: 4, y: 5, z: 2});
+        expect(result[57]).toStrictEqual({x: 2, y: 3, z: 3});
+        expect(result[79]).toStrictEqual({x: 4, y: 4, z: 4});
+        expect(result[102]).toStrictEqual({x: 4, y: 2, z: 5});
+        expect(result[124]).toStrictEqual({x: 1, y: 1, z: 5});
+    })
+
+    test("Iteration stops after reaching all borders in a volume", () => {
+        SpiralWalkCoordGen.Reset();
+        SpiralWalkCoordGen.VolumeMode = { enabled: true };
+        SpiralWalkCoordGen.StartCoord = {x: 3, y: 3, z: 1, dz: 1};
+        SpiralWalkCoordGen.Border = {
+            x: 1,
+            y: 1,
+            z: 1,
+            width: 8,
+            height: 5,
+            depth: 10
+        }
+
+        const result = [];
+        for (const coord of SpiralWalkCoordGen) {
+            result.push(coord);
+        }
+
+        expect(result).toHaveLength(400);
     })
 
     test("Iteration stops when reaching the first border", () => {
@@ -119,6 +326,38 @@ describe("Testing Spiral Walk as static", () => {
         console.log(result);
         expect(result).toHaveLength(25);
         expect(result[24]).toStrictEqual({x: 6, y: 2});
+    })
+
+    test("Test setting the borders directly", () => {
+        SpiralWalkCoordGen.Reset();
+        SpiralWalkCoordGen.VolumeMode = { enabled: true }
+        SpiralWalkCoordGen.StartCoord = {x: 50, y: 50, z: 50};
+
+        SpiralWalkCoordGen.Border = {
+            x: 30, y: 30, z: 30,
+            width: 41, height: 41, depth: 41
+        }
+
+        let result = [];
+        for (const coord of SpiralWalkCoordGen) {
+            result.push(coord);
+        }
+        expect(result).toHaveLength(1681);
+        expect(result[1680]).toStrictEqual({x: 30, y: 30, z: 50});
+
+        SpiralWalkCoordGen.Border = {
+            leftPlaneMinX: 20, topPlaneMinY: 20, frontPlaneMinZ: 20,
+            rightPlaneMaxX: 80, bottomPlaneMaxY: 80, backPlaneMaxZ: 80,
+        }
+
+        result = [];
+        for (const coord of SpiralWalkCoordGen) {
+            result.push(coord);
+        }
+        expect(result).toHaveLength(3721);
+        expect(result[1680]).toStrictEqual({x: 30, y: 30, z: 50});
+        expect(result[3720]).toStrictEqual({x: 20, y: 20, z: 50});
+
     })
 
     test("Custom filter that always return true gives 10 coordinates", () => {
@@ -194,44 +433,6 @@ describe("Testing Spiral Walk as static", () => {
         expect(result[99]).toStrictEqual({x: 2, y: 7});
     })
 
-    test("Spiral goes ccw on circle when changing direction", () => {
-        SpiralWalkCoordGen.Reset();
-        SpiralWalkCoordGen.StopCondition = { maxCircles: 1};
-        SpiralWalkCoordGen.StartCoord = {x: 5, y: 5};
-        SpiralWalkCoordGen.Walking = {direction: "ccw"};
-
-        const result = [];
-
-        for (const coord of SpiralWalkCoordGen) {
-            result.push(coord);
-        }
-
-        expect(result).toHaveLength(9);
-        expect(result[0]).toStrictEqual({x: 5, y: 5});
-        expect(result[1]).toStrictEqual({x: 5, y: 4});
-        expect(result[2]).toStrictEqual({x: 4, y: 4});
-        expect(result[3]).toStrictEqual({x: 4, y: 5});
-        expect(result[4]).toStrictEqual({x: 4, y: 6});
-        expect(result[5]).toStrictEqual({x: 5, y: 6});
-        expect(result[6]).toStrictEqual({x: 6, y: 6});
-        expect(result[7]).toStrictEqual({x: 6, y: 5});
-        expect(result[8]).toStrictEqual({x: 6, y: 4});
-    })
-
-    test("Iteration stops after 441 coordinates in ccw direction", () => {
-        SpiralWalkCoordGen.Reset();
-        SpiralWalkCoordGen.Walking = { direction: "ccw" };
-
-        const result = [];
-        for (const coord of SpiralWalkCoordGen) {
-            result.push(coord);
-        }
-
-        expect(result).toHaveLength(441);
-        expect(result[0]).toStrictEqual({x: 0, y: 0});
-        expect(result[440]).toStrictEqual({x: 10, y: -10});
-    })
-
     test("5 run after each other should give same result", () => {
         SpiralWalkCoordGen.Reset();
         SpiralWalkCoordGen.StopCondition = { reachedIterationCount: 6};
@@ -291,137 +492,6 @@ describe("Testing Spiral Walk as static", () => {
         expect(resultA[4].y).toEqual(resultB[4].y);
     })
 
-    test("Setting dx to 10 will shift start coord after each iteration has ended", () => {
-        SpiralWalkCoordGen.Reset();
-        SpiralWalkCoordGen.Border = {
-            x: 0,
-            y: 0,
-            width: 100,
-            height: 100
-        }
-        SpiralWalkCoordGen.StopCondition = { reachedIterationCount: 5};
-        SpiralWalkCoordGen.StartCoord = {x: 30, y: 30, dx: 10};
-
-        const resultA = [];
-        for (const coord of SpiralWalkCoordGen) {
-            resultA.push(coord);
-        }
-
-        let resultB = [];
-        for (const coord of SpiralWalkCoordGen) {
-            resultB.push(coord);
-        }
-
-        expect(resultA[0].x + 10).toEqual(resultB[0].x);
-        expect(resultA[0].y).toEqual(resultB[0].y);
-        expect(resultA[1].x + 10).toEqual(resultB[1].x);
-        expect(resultA[1].y).toEqual(resultB[1].y);
-        expect(resultA[2].x + 10).toEqual(resultB[2].x);
-        expect(resultA[2].y).toEqual(resultB[2].y);
-        expect(resultA[3].x + 10).toEqual(resultB[3].x);
-        expect(resultA[3].y).toEqual(resultB[3].y);
-        expect(resultA[4].x + 10).toEqual(resultB[4].x);
-        expect(resultA[4].y).toEqual(resultB[4].y);
-
-        resultB = [];
-        for (const coord of SpiralWalkCoordGen) {
-            resultB.push(coord);
-        }
-
-        expect(resultA[0].x + 20).toEqual(resultB[0].x);
-        expect(resultA[0].y).toEqual(resultB[0].y);
-        expect(resultA[1].x + 20).toEqual(resultB[1].x);
-        expect(resultA[1].y).toEqual(resultB[1].y);
-        expect(resultA[2].x + 20).toEqual(resultB[2].x);
-        expect(resultA[2].y).toEqual(resultB[2].y);
-        expect(resultA[3].x + 20).toEqual(resultB[3].x);
-        expect(resultA[3].y).toEqual(resultB[3].y);
-        expect(resultA[4].x + 20).toEqual(resultB[4].x);
-        expect(resultA[4].y).toEqual(resultB[4].y);
-    })
-
-    test("Changing dx will chance the shifting on x axes", () => {
-        SpiralWalkCoordGen.Reset();
-
-        SpiralWalkCoordGen.Border = {
-            x: -100,
-            y: -100,
-            width: 201,
-            height: 201
-        }
-        SpiralWalkCoordGen.StopCondition = { reachedIterationCount: 15};
-
-        let result = [];
-        for (const coord of SpiralWalkCoordGen) {
-            result.push(coord);
-        }
-        expect(result[0]).toStrictEqual({x: 0, y: 0});
-        expect(result[14]).toStrictEqual({x: 2, y: 0});
-
-        SpiralWalkCoordGen.StartCoord = {dx: 10};
-        result = [];
-        for (const coord of SpiralWalkCoordGen) {
-            result.push(coord);
-        }
-        expect(result[0]).toStrictEqual({x: 10, y: 0});
-        expect(result[14]).toStrictEqual({x: 12, y: 0});
-        result = [];
-        for (const coord of SpiralWalkCoordGen) {
-            result.push(coord);
-        }
-        expect(result[0]).toStrictEqual({x: 20, y: 0});
-        expect(result[14]).toStrictEqual({x: 22, y: 0});
-
-        SpiralWalkCoordGen.StartCoord = {dx: 30};
-        result = [];
-        for (const coord of SpiralWalkCoordGen) {
-            result.push(coord);
-        }
-        expect(result[0]).toStrictEqual({x: 50, y: 0});
-        expect(result[14]).toStrictEqual({x: 52, y: 0});
-    })
-
-    test("Changing dy will chance the shifting on y axes", () => {
-        SpiralWalkCoordGen.Reset();
-
-        SpiralWalkCoordGen.Border = {
-            x: -100,
-            y: -100,
-            width: 201,
-            height: 201
-        }
-        SpiralWalkCoordGen.StopCondition = { reachedIterationCount: 19};
-
-        let result = [];
-        for (const coord of SpiralWalkCoordGen) {
-            result.push(coord);
-        }
-        expect(result[0]).toStrictEqual({x: 0, y: 0});
-        expect(result[18]).toStrictEqual({x: 0, y: 2});
-
-        SpiralWalkCoordGen.StartCoord = {dy: 10};
-        result = [];
-        for (const coord of SpiralWalkCoordGen) {
-            result.push(coord);
-        }
-        expect(result[0]).toStrictEqual({x: 0, y: 10});
-        expect(result[18]).toStrictEqual({x: 0, y: 12});
-        result = [];
-        for (const coord of SpiralWalkCoordGen) {
-            result.push(coord);
-        }
-        expect(result[0]).toStrictEqual({x: 0, y: 20});
-        expect(result[18]).toStrictEqual({x: 0, y: 22});
-        
-        SpiralWalkCoordGen.StartCoord = {dy: 30};
-        result = [];
-        for (const coord of SpiralWalkCoordGen) {
-            result.push(coord);
-        }
-        expect(result[0]).toStrictEqual({x: 0, y: 50});
-        expect(result[18]).toStrictEqual({x: 0, y: 52});
-    })
-
     test("Walk on the xy plane in a volume with z set to 0", () => {
         SpiralWalkCoordGen.Reset();
         SpiralWalkCoordGen.VolumeMode = { enabled: true }
@@ -442,45 +512,6 @@ describe("Testing Spiral Walk as static", () => {
         expect(result[6]).toStrictEqual({x: -1, y: 1, z: 0});
         expect(result[7]).toStrictEqual({x: -1, y: 0, z: 0});
         expect(result[8]).toStrictEqual({x: -1, y: -1, z: 0});
-    })
-
-    test("Walk on the xy plane while z is shifted with dz", () => {
-        SpiralWalkCoordGen.Reset();
-        SpiralWalkCoordGen.VolumeMode = { enabled: true }
-        SpiralWalkCoordGen.StopCondition = { maxCircles: 1 };
-        SpiralWalkCoordGen.Border = {
-            x: -10, y: -10, z: -100,
-            width: 21, height: 21, depth: 201
-        }
-
-        let result = [];
-        for (const coord of SpiralWalkCoordGen) {
-            result.push(coord);
-        }
-        expect(result[0]).toStrictEqual({x: 0, y: 0, z: 0});
-        expect(result[4]).toStrictEqual({x: 1, y: 1, z: 0});
-        expect(result[8]).toStrictEqual({x: -1, y: -1, z: 0});
-
-        SpiralWalkCoordGen.StartCoord = {dz: 10};
-        for (let i = 1; i <= 5; i++) {
-            result = [];
-            for (const coord of SpiralWalkCoordGen) {
-                result.push(coord);
-            }
-            expect(result[0]).toStrictEqual({x: 0, y: 0, z: i*10});
-            expect(result[4]).toStrictEqual({x: 1, y: 1, z: i*10});
-            expect(result[8]).toStrictEqual({x: -1, y: -1, z: i*10});
-        }
-
-        SpiralWalkCoordGen.StartCoord = {dz: -70};
-        result = [];
-        for (const coord of SpiralWalkCoordGen) {
-            result.push(coord);
-        }
-        expect(result[0]).toStrictEqual({x: 0, y: 0, z: -20});
-        expect(result[4]).toStrictEqual({x: 1, y: 1, z: -20});
-        expect(result[8]).toStrictEqual({x: -1, y: -1, z: -20});
-
     })
 
     test("Walk on the xy plane in a volume with z set to non 0", () => {
@@ -656,111 +687,6 @@ describe("Testing Spiral Walk as static", () => {
 
     })
 
-    test("Walk on all xy plans in a cube", () => {
-        SpiralWalkCoordGen.Reset();
-        SpiralWalkCoordGen.Border = {
-            x: 0, y: 0, z: 0,
-            width: 7, height: 7, depth: 7
-        }
-        SpiralWalkCoordGen.VolumeMode = { enabled: true, iterateOverPlan: "xy" }
-        SpiralWalkCoordGen.StartCoord = {x: 3, y: 3, z: 0, dz: 1};
 
-        for (let i = 0; i < 7; i++) {
-            const result = [];
-            for (const coord of SpiralWalkCoordGen) {
-                result.push(coord);
-            }
-            expect(result).toHaveLength(49);
-            expect(result[0]).toStrictEqual({x: 3, y: 3, z: i});
-            expect(result[8]).toStrictEqual({x: 2, y: 2, z: i});
-            expect(result[16]).toStrictEqual({x: 5, y: 5, z: i});
-            expect(result[24]).toStrictEqual({x: 1, y: 1, z: i});
-            expect(result[32]).toStrictEqual({x: 6, y: 2, z: i});
-            expect(result[40]).toStrictEqual({x: 2, y: 6, z: i});
-            expect(result[48]).toStrictEqual({x: 0, y: 0, z: i});
-        }
-    })
-
-    test("Walk on all xz plans in a cube", () => {
-        SpiralWalkCoordGen.Reset();
-        SpiralWalkCoordGen.Border = {
-            x: 0, y: 0, z: 0,
-            width: 7, height: 7, depth: 7
-        }
-        SpiralWalkCoordGen.VolumeMode = { enabled: true, iterateOverPlan: "xz" }
-        SpiralWalkCoordGen.StartCoord = {x: 3, y: 0, z: 3, dy: 1};
-
-        for (let i = 0; i < 7; i++) {
-            const result = [];
-            for (const coord of SpiralWalkCoordGen) {
-                result.push(coord);
-            }
-            expect(result).toHaveLength(49);
-            expect(result[0]).toStrictEqual({x: 3, y: i, z: 3});
-            expect(result[8]).toStrictEqual({x: 2, y: i, z: 2});
-            expect(result[16]).toStrictEqual({x: 5, y: i, z: 5});
-            expect(result[24]).toStrictEqual({x: 1, y: i, z: 1});
-            expect(result[32]).toStrictEqual({x: 6, y: i, z: 2});
-            expect(result[40]).toStrictEqual({x: 2, y: i, z: 6});
-            expect(result[48]).toStrictEqual({x: 0, y: i, z: 0});
-        }
-    })
-
-    test("Walk on all yz plans in a cube", () => {
-        SpiralWalkCoordGen.Reset();
-        SpiralWalkCoordGen.Border = {
-            x: 0, y: 0, z: 0,
-            width: 7, height: 7, depth: 7
-        }
-        SpiralWalkCoordGen.VolumeMode = { enabled: true, iterateOverPlan: "yz" }
-        SpiralWalkCoordGen.StartCoord = {x: 0, y: 3, z: 3, dx: 1};
-
-        for (let i = 0; i < 7; i++) {
-            const result = [];
-            for (const coord of SpiralWalkCoordGen) {
-                result.push(coord);
-            }
-            expect(result).toHaveLength(49);
-            expect(result[0]).toStrictEqual({x: i, y: 3, z: 3});
-            expect(result[8]).toStrictEqual({x: i, y: 2, z: 2});
-            expect(result[16]).toStrictEqual({x: i, y: 5, z: 5});
-            expect(result[24]).toStrictEqual({x: i, y: 1, z: 1});
-            expect(result[32]).toStrictEqual({x: i, y: 6, z: 2});
-            expect(result[40]).toStrictEqual({x: i, y: 2, z: 6});
-            expect(result[48]).toStrictEqual({x: i, y: 0, z: 0});
-        }
-    })
-
-    test("Test setting the borders directly", () => {
-        SpiralWalkCoordGen.Reset();
-        SpiralWalkCoordGen.VolumeMode = { enabled: true }
-        SpiralWalkCoordGen.StartCoord = {x: 50, y: 50, z: 50};
-
-        SpiralWalkCoordGen.Border = {
-            x: 30, y: 30, z: 30,
-            width: 41, height: 41, depth: 41
-        }
-
-        let result = [];
-        for (const coord of SpiralWalkCoordGen) {
-            result.push(coord);
-        }
-        expect(result).toHaveLength(1681);
-        expect(result[1680]).toStrictEqual({x: 30, y: 30, z: 50});
-
-        SpiralWalkCoordGen.Border = {
-            leftPlaneMinX: 20, topPlaneMinY: 20, frontPlaneMinZ: 20,
-            rightPlaneMaxX: 80, bottomPlaneMaxY: 80, backPlaneMaxZ: 80,
-        }
-
-        result = [];
-        for (const coord of SpiralWalkCoordGen) {
-            result.push(coord);
-        }
-        expect(result).toHaveLength(3721);
-        expect(result[1680]).toStrictEqual({x: 30, y: 30, z: 50});
-        expect(result[3720]).toStrictEqual({x: 20, y: 20, z: 50});
-
-    })
 
 })

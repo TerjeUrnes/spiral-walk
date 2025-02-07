@@ -94,31 +94,35 @@ planeCount here is smaller then custom function's plainCount, this is done for m
         }
 
         while (ShouldWalkOneMoreCircle()) {
-            
+
             circleCount++
             lineLength = circleCount * 2
             X = startCoord.x - circleCount
             Y = startCoord.y - circleCount
             Z = startCoord.z + planeCount
 
-            for (hTop = 0; hTop < lineLength; hTop++, X++) {
-                if (includeCoordinate( X + 1, Y )) {
-                    yield { x: X + 1, y: Y, z: Z }
+            for (hTop = 0; hTop < lineLength; hTop++) {
+                X++
+                if (includeCoordinate( X, Y )) {
+                    yield { x: X, y: Y, z: Z }
                 }
             }
-            for (vRight = 0; vRight < lineLength; vRight++, Y++) {
-                if (includeCoordinate( X, Y + 1 )) {
-                    yield { x: X, y: Y + 1, z: Z}
+            for (vRight = 0; vRight < lineLength; vRight++) {
+                Y++
+                if (includeCoordinate( X, Y )) {
+                    yield { x: X, y: Y, z: Z}
                 }
             }
-            for (hBottom = 0; hBottom < lineLength; hBottom++, X--) {
-                if (includeCoordinate( X - 1, Y )) {
-                    yield { x: X - 1, y: Y, z: Z }
+            for (hBottom = 0; hBottom < lineLength; hBottom++) {
+                X--
+                if (includeCoordinate( X, Y )) {
+                    yield { x: X, y: Y, z: Z }
                 }
             }
-            for (vLeft = 0; vLeft < lineLength; vLeft++, Y--) {
-                if (includeCoordinate( X, Y - 1)) {
-                    yield {x: X, y: Y - 1, z: Z }
+            for (vLeft = 0; vLeft < lineLength; vLeft++) {
+                Y--
+                if (includeCoordinate( X, Y)) {
+                    yield {x: X, y: Y, z: Z }
                 }
             }
         }
@@ -126,9 +130,9 @@ planeCount here is smaller then custom function's plainCount, this is done for m
     }
     while (ShouldGoToNextPlane())
 }
-
-
 ```
+
+<img src="readme-img/spiral-walk-example-4.webp" width="100%">
 
   <br>
 

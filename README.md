@@ -74,6 +74,64 @@ The numbers are the indexes for the generated output.
 
   <br>
 
+
+### Iteration Algorithm (Simplified)
+planeCount here is smaller then custom function's plainCount, this is done for making this code simpler. 
+
+```js
+*[Symbol.iterator]() {
+
+    planeCount = -1
+
+    do {
+
+        planeCount++
+        circleCount = 0
+
+        if (includeStartCoord) {
+            yield { x: startCoord.x, y: startCoord.y, 
+                        z: startCoord.z + planeCount }
+        }
+
+        while (ShouldWalkOneMoreCircle()) {
+            
+            circleCount++
+            lineLength = circleCount * 2
+            X = startCoord.x - circleCount
+            Y = startCoord.y - circleCount
+            Z = startCoord.z + planeCount
+
+            for (hTop = 0; hTop < lineLength; hTop++, X++) {
+                if (includeCoordinate( X + 1, Y )) {
+                    yield { x: X + 1, y: Y, z: Z }
+                }
+            }
+            for (vRight = 0; vRight < lineLength; vRight++, Y++) {
+                if (includeCoordinate( X, Y + 1 )) {
+                    yield { x: X, y: Y + 1, z: Z}
+                }
+            }
+            for (hBottom = 0; hBottom < lineLength; hBottom++, X--) {
+                if (includeCoordinate( X - 1, Y )) {
+                    yield { x: X - 1, y: Y, z: Z }
+                }
+            }
+            for (vLeft = 0; vLeft < lineLength; vLeft++, Y--) {
+                if (includeCoordinate( X, Y - 1)) {
+                    yield {x: X, y: Y - 1, z: Z }
+                }
+            }
+        }
+
+    }
+    while (ShouldGoToNextPlane())
+}
+
+
+```
+
+  <br>
+
 ### Properties
 Uses [destructuring assignment](https://developer.mozilla.org/en-US/docs/Web/JavaScript/Reference/Operators/Destructuring_assignment) as inputs.<br>
 i.e. you do not ned to use all arguments <br>

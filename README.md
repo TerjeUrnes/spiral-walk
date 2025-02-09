@@ -1,26 +1,42 @@
 <img src="readme-img/spiral-walk-example.webp" width="100%">
 
 
-# Spiral Walk <br> Coordinate Generator <br> on a 2D Plane in a 2D or 3D World
+# Spiral Walking <br> on a 2D plane in a 2D or 3D world <br> A iterator that generates coordinates
+
+```js
+for (const coord of SpiralWalkCoordGen) {
+    matrixToWalkIn[coord.x][coord.y];
+}
+```
 
   <br>
 
-Tool for generating coordinates for spiral walking in a 2D plane. The plane can be a 2d matrix (x, y) or a slice (slabs with one cell thickness) of a 3d volume (x, y, z)
+This tool let you walk outwards in a spiral from a given point in a 2D plain. The plain can be a 2D matrix or a slice (slabs with one cell thickness) of a 3d volume, or other that takes coordinates as input. 
+
+It's made as an iterator that you use in a for...of loop, as seen in the code block above. 
+
+  <br>
+
+> [!NOTE]  
+> It's implemented as vanilla javascript class in a [ECMAscript module](https://developer.mozilla.org/en-US/docs/Web/JavaScript/Guide/Modules). 
+> The module is in its most simple form, just remove the `export` key in front of the class definition to use it as a regular class.
+
+  <br>
 
 ```js
-// Use as static
+// How to use as static
 
 SpiralWalkCoordGen.StopCondition = { maxCircles: 2 }
 SpiralWalkCoordGen.StartCoord = { x: 5, y: 5 };
 
-for (const coord of SpiralWalkCoorGen) {
+for (const coord of SpiralWalkCoordGen) {
     //const result = testMatrix[coord.x][coord.y] != null ? "full" : "empty"
     //console.log(coord, "The cell is " + result);
 }
 ```
 
 ```js
-// Use as instance
+// How to use as instance
 
 const generator = new SpiralWalkCoordGen();
 
@@ -34,7 +50,7 @@ for (const coord of generator) {
 ```
 <details>
   <summary>
-    outprint (both static and instance commented out code):
+    outprint:
   </summary>
     { x: 5, y: 5 } - The cell is empty<br>
     { x: 5, y: 4 } - The cell is full <br>
@@ -63,20 +79,28 @@ for (const coord of generator) {
     { x: 3, y: 3 } - The cell is empty
 </details>
 
+
+  <br>
+> [!NOTE]  
+> The properties exist as both static properties and as instance properties.
+> All examples works also when using a instance.
+
   <br>
 > [!CAUTION]
 > It does not check the input. The user of this class is responsible for that it is correct.
-  <br>
-
-<img src="readme-img/spiral-walk-example-3.webp" width="100%">
-The numbers are the indexes for the generated output.
-
 
   <br>
 
 
 ### Iteration Algorithm (Simplified)
-planeCount here is smaller then custom function's plainCount, this is done for making this code simpler. 
+
+Her is the spiral walk algorithm. It is one while loop and four for loops, the first do-while is not a part of the circle walk but for moving to the next plain and thus move through a volume. The while loop that is a part of the walk algorithm decides how many circle there should be, while the for loops is for traversing one of the four sides of the circle, hTop vRight hBottom and vLeft, v stands for vertical and h is horizontal. See fig.A. 
+
+Notice that the traversing starts on the second square, while in the code the X,Y and Z is set on the upper left corner. So the first to do in the for loop is to shift to the next square, that is whey starting with increase or decrease the axes that are traversed. waiting with increase or decrease to after generated the coordinate will end up as seen in fig.B. Notice also that length of a side that they traverse is circle number multiplied with 2. 
+
+> [!NOTE]  
+> In order to keep it simple here `planeCount` is zero based (counts from 0), 
+> while `planeCount` that are coming in to the custom function is one based (counts from 1).
 
 ```js
 *[Symbol.iterator]() {
@@ -96,30 +120,30 @@ planeCount here is smaller then custom function's plainCount, this is done for m
         while (ShouldWalkOneMoreCircle()) {
 
             circleCount++
-            lineLength = circleCount * 2
+            sideLength = circleCount * 2
             X = startCoord.x - circleCount
             Y = startCoord.y - circleCount
             Z = startCoord.z + planeCount
 
-            for (hTop = 0; hTop < lineLength; hTop++) {
+            for (hTop = 0; hTop < sideLength; hTop++) {
                 X++
                 if (includeCoordinate( X, Y )) {
                     yield { x: X, y: Y, z: Z }
                 }
             }
-            for (vRight = 0; vRight < lineLength; vRight++) {
+            for (vRight = 0; vRight < sideLength; vRight++) {
                 Y++
                 if (includeCoordinate( X, Y )) {
                     yield { x: X, y: Y, z: Z}
                 }
             }
-            for (hBottom = 0; hBottom < lineLength; hBottom++) {
+            for (hBottom = 0; hBottom < sideLength; hBottom++) {
                 X--
                 if (includeCoordinate( X, Y )) {
                     yield { x: X, y: Y, z: Z }
                 }
             }
-            for (vLeft = 0; vLeft < lineLength; vLeft++) {
+            for (vLeft = 0; vLeft < sideLength; vLeft++) {
                 Y--
                 if (includeCoordinate( X, Y)) {
                     yield {x: X, y: Y, z: Z }
@@ -158,12 +182,12 @@ All values here can be float, will be truncated when used and all output will be
 
 ```js
 SpiralWalkCoordGen.StartCoord = { x: 90, y: 50 };
-for (const coord of SpiralWalkCoorGen) {
+for (const coord of SpiralWalkCoordGen) {
     // first coord x: 90 y: 50
 }
 
 SpiralWalkCoordGen.StartCoord = { x: 100 }
-for (const coord of SpiralWalkCoorGen) {
+for (const coord of SpiralWalkCoordGen) {
     // first coord x: 100 y: 50
 }
 
@@ -346,3 +370,15 @@ Exist only as a static function
 ```js
 SpiralWalkCoordGen.Reset();
 ```
+
+  <br>
+
+### Performance
+
+Optimization hasn't received much focus. Still, I don't think there will be any issues in most cases since a unit test generating a 10 million long spiral executes in about 0.7s on a M2 MacBook Air
+
+  <br>
+
+<img src="readme-img/spiral-walk-example-3.webp" width="100%">
+The numbers are the indexes for the generated output.
+

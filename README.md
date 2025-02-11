@@ -4,8 +4,9 @@
 # Spiral Walking <br> on a 2D plane in a 2D or 3D world <br> A iterator that generates coordinates
 
 ```js
-for (const coord of SpiralWalkCoordGen) {
-    matrixToWalkIn[coord.x][coord.y];
+const inSpiralOrder = [];
+for (const { x, y } of SpiralWalkCoordGen) {
+    inSpiralOrder.push( matrixToWalkIn[ x ][ y ] );
 }
 ```
 
@@ -13,13 +14,14 @@ for (const coord of SpiralWalkCoordGen) {
 
 This tool let you walk outwards in a spiral from a given point in a 2D plain. The plain can be a 2D matrix or a slice (slabs with one cell thickness) of a 3d volume, or other that takes coordinates as input. 
 
-It's made as an iterator that you use in a for...of loop, as seen in the code block above. 
+It's made as an iterator that you use in a for...of loop, as seen in the code block above. In that example the result is a 1D list with all the elements in spiral order. 
 
   <br>
 
 > [!NOTE]  
 > It's implemented as vanilla javascript class in a [ECMAscript module](https://developer.mozilla.org/en-US/docs/Web/JavaScript/Guide/Modules). 
-> The module is in its most simple form, just remove the `export` key in front of the class definition to use it as a regular class.
+> The module is in its most simple form, just remove the `export` key in front of the class definition to use it as a regular class. <br>
+> All inputs and outputs to this class follows the [destructuring assignment](https://developer.mozilla.org/en-US/docs/Web/JavaScript/Reference/Operators/Destructuring_assignment) syntax
 
   <br>
 
@@ -30,8 +32,8 @@ SpiralWalkCoordGen.StopCondition = { maxCircles: 2 }
 SpiralWalkCoordGen.StartCoord = { x: 5, y: 5 };
 
 for (const coord of SpiralWalkCoordGen) {
-    //const result = testMatrix[coord.x][coord.y] != null ? "full" : "empty"
-    //console.log(coord, "The cell is " + result);
+    const result = testMatrix[coord.x][coord.y] != null ? "full" : "empty"
+    console.log(coord, "The cell is " + result);
 }
 ```
 
@@ -44,8 +46,8 @@ generator.StopCondition = { maxCircles: 2 }
 generator.StartCoord = { x: 5, y: 5 };
 
 for (const coord of generator) {
-    //const result = testMatrix[coord.x][coord.y] != null ? "full" : "empty"
-    //console.log(coord, "The cell is " + result);
+    const result = testMatrix[coord.x][coord.y] != null ? "full" : "empty"
+    console.log(coord, "The cell is " + result);
 }
 ```
 <details>
@@ -81,25 +83,29 @@ for (const coord of generator) {
 
 
   <br>
-> [!NOTE]  
-> The properties exist as both static properties and as instance properties.
-> All examples works also when using a instance.
-
-  <br>
-> [!CAUTION]
-> It does not check the input. The user of this class is responsible for that it is correct.
-
-  <br>
 
 
 ### Iteration Algorithm (Simplified)
 
-Her is the spiral walk algorithm. It is one while loop and four for loops, the first do-while is not a part of the circle walk but for moving to the next plain and thus move through a volume. The while loop that is a part of the walk algorithm decides how many circle there should be, while the for loops is for traversing one of the four sides of the circle, hTop vRight hBottom and vLeft, v stands for vertical and h is horizontal. See fig.A. 
+```js
+while ("Should walk one more circle") {
+    for ( "Traverse top row" )
+        "new coordinate"
+    for ( "Traverse most right column" )
+        "new coordinate"
+    for ( "Traverse bottom row" )
+        "new coordinate"
+    for ( "Traverse most left column" )
+        "new coordinate"
+}
+```
 
-Notice that the traversing starts on the second square, while in the code the X,Y and Z is set on the upper left corner. So the first to do in the for loop is to shift to the next square, that is whey starting with increase or decrease the axes that are traversed. waiting with increase or decrease to after generated the coordinate will end up as seen in fig.B. Notice also that length of a side that they traverse is circle number multiplied with 2. 
+This is the spiral walk algorithm. It is one while loop and four for loops, the first do-while in the code below is not a part of the circle walk but for moving to the next plain and thus move through a volume. The while loop that is a part of the walk algorithm decides how many circle there should be, while the for loops is for traversing one of the four sides of the circle. See fig.A. 
+
+Notice that the traversing starts on the second square, while in the code the X,Y and Z is set on the upper left corner. So the first to do in the for loop is to shift one square, that is whey starting with increase or decrease the axes that are traversed. waiting with increase or decrease to after generated the coordinate will end up as seen in fig.B. Notice also that length of a side that they traverse is circle number multiplied with 2. 
 
 > [!NOTE]  
-> In order to keep it simple here `planeCount` is zero based (counts from 0), 
+> In order to keep it simple `planeCount` is here zero based (counts from 0), 
 > while `planeCount` that are coming in to the custom function is one based (counts from 1).
 
 ```js
@@ -161,24 +167,37 @@ Notice that the traversing starts on the second square, while in the code the X,
   <br>
 
 ### Properties
-Uses [destructuring assignment](https://developer.mozilla.org/en-US/docs/Web/JavaScript/Reference/Operators/Destructuring_assignment) as inputs.<br>
+All uses [destructuring assignment](https://developer.mozilla.org/en-US/docs/Web/JavaScript/Reference/Operators/Destructuring_assignment) as inputs and outputs.
 i.e. you do not ned to use all arguments <br>
-All properties has only setters.
+All properties has only setters, so the only output is the iterator and the arguments that goes into the custom function.
+
+
+  <br>
+> [!NOTE]  
+> The properties exist as both static properties and as instance properties.
+> All examples works also when using it as a instance.
+
+  <br>
+> [!CAUTION]
+> It does not check the input. The user of this class is responsible for that it is correct.
 
   <br>
 **StartCoord**<br>
-Can be included or excluded from the iteration output. <br>
-Coord outside of border can result in no iteration output, see border.
-All values here can be float, will be truncated when used and all output will be integers. A delta less then 1 can result in the same coordinates. x = 1.9 gives the value 1, adding dx = 0.2 gives the value 2, adding dx again gives the value 2 one more time.
+Is the center and starting point for the spiral.
+
+> [!NOTE]  
+> Coord outside of border can result in no iteration output.<br>
+> A delta less then 1 can result in the same coordinates. x = 1.9 gives the value 1, adding dx = 0.2 gives the value 2, adding dx again gives the value 2 one more time.
+
 | Argument<br>name | Default<br>value | Values | |
 |---|---|---|---|
-| x | 0 | number | |
-| y | 0 | number | |
-| z | 0 | number | Volume mode only
-| dx | 0 | number | Shifts the x coordinate with value after has iterated over all coordinates |
-| dy | 0 | number | As dx but for the y coordinate |
-| dz | 0 | number | As dx but for the z coordinate. Volume mode only
-| includeInIteration | true | boolean
+| x | 0.00 | number | |
+| y | 0.00 | number | |
+| z | 0.00 | number | Only used in volume mode |
+| dx | 0.00 | number | Shifts the x coordinate after has ended the circle |
+| dy | 0.00 | number | As dx but for the y coordinate |
+| dz | 0.00 | number | As dx but for the z coordinate. Only used in volume mode
+| includeInIteration | true | boolean | Start with the center or the first circle.
 
 ```js
 SpiralWalkCoordGen.StartCoord = { x: 90, y: 50 };
@@ -197,24 +216,7 @@ for (const coord of SpiralWalkCoorGen) {
 }
 ```
 ```js
-SpiralWalkCoordGen.StartCoord = { x: 90, y: 50, dx: -5, dy: 5};
-for (const coord of SpiralWalkCoorGen) {
-    // first coord x: 90 y: 50
-}
-for (const coord of SpiralWalkCoorGen) {
-    // first coord x: 85 y: 55
-}
-for (const coord of SpiralWalkCoorGen) {
-    // first coord x: 80 y: 60
-}
 
-SpiralWalkCoordGen.StartCoord = { dx: -10, dy: 0};
-for (const coord of SpiralWalkCoorGen) {
-    // first coord x: 70 y: 60
-}
-for (const coord of SpiralWalkCoorGen) {
-    // first coord x: 60 y: 60
-}
 ```
   <br>
 

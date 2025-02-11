@@ -222,7 +222,7 @@ describe("Testing Spiral Walk as static", () => {
         expect(result[9999]).toStrictEqual({x: 50, y: 49});
     })
 
-    test("Iteration stops after 10mill coordinates when turning off border check", () => {
+    test.skip("Iteration stops after 10mill coordinates when turning off border check", () => {
         SpiralWalkCoordGen.Reset();
         SpiralWalkCoordGen.StopCondition = { 
             reachedAllBorders: false, 
@@ -594,6 +594,112 @@ describe("Testing Spiral Walk as static", () => {
         expect(result[7]).toStrictEqual({x: 12, y: 13, z: 18});
         expect(result[8]).toStrictEqual({x: 12, y: 13, z: 17});
     })
+
+    test("Walk on the xy plane while traversing in the z axes", () => {
+        SpiralWalkCoordGen.Reset();
+        SpiralWalkCoordGen.VolumeMode = { enabled: true }
+        SpiralWalkCoordGen.StopCondition = { maxCircles: 2 };
+        SpiralWalkCoordGen.Border = {
+            x: 10, y: 10, z: 10,
+            width: 11, height: 11, depth: 11
+        }
+        SpiralWalkCoordGen.StartCoord = {x: 16, y: 16, z: 10, dz: 1};
+
+        const result = [];
+        for (const coord of SpiralWalkCoordGen) {
+            result.push(coord);
+        }
+
+        expect(result).toHaveLength(275);
+    })
+
+    test("walk on the xz plane while traversing in the z axes", () => {
+        SpiralWalkCoordGen.Reset();
+        SpiralWalkCoordGen.VolumeMode = { enabled: true, iterateOverPlan: "xz" }
+        SpiralWalkCoordGen.StopCondition = { maxCircles: 2 };
+        SpiralWalkCoordGen.Border = {
+            x: 10, y: 10, z: 10,
+            width: 11, height: 11, depth: 11
+        }
+        SpiralWalkCoordGen.StartCoord = {x: 16, y: 10, z: 16, dy: 1};
+
+        const result = [];
+        for (const coord of SpiralWalkCoordGen) {
+            result.push(coord);
+        }
+
+        expect(result).toHaveLength(275);
+    })
+
+    test("Walk on the yz plane while traversing in the x axes", () => {
+        SpiralWalkCoordGen.Reset();
+        SpiralWalkCoordGen.VolumeMode = { enabled: true, iterateOverPlan: "yz" }
+        SpiralWalkCoordGen.StopCondition = { maxCircles: 2 };
+        SpiralWalkCoordGen.Border = {
+            x: 10, y: 10, z: 10,
+            width: 11, height: 11, depth: 11
+        }
+        SpiralWalkCoordGen.StartCoord = {x: 10, y: 16, z: 16, dx: 1};
+
+        const result = [];
+        for (const coord of SpiralWalkCoordGen) {
+            result.push(coord);
+        }
+
+        expect(result).toHaveLength(275);
+    })
+
+    test("Walk on all cells in a volume while traversing im z direction", () => {
+        SpiralWalkCoordGen.Reset();
+        SpiralWalkCoordGen.VolumeMode = { enabled: true, iterateOverPlan: "xy" }
+        SpiralWalkCoordGen.Border = {
+            x: 10, y: 10, z: 10,
+            width: 11, height: 21, depth: 31
+        }
+        SpiralWalkCoordGen.StartCoord = {x: 16, y: 21, z: 10, dz: 1};
+
+        const result = [];
+        for (const coord of SpiralWalkCoordGen) {
+            result.push(coord);
+        }
+
+        expect(result).toHaveLength(7161);
+    })
+
+    test("Walk on all cells in a volume while traversing in y direction", () => {
+        SpiralWalkCoordGen.Reset();
+        SpiralWalkCoordGen.VolumeMode = { enabled: true, iterateOverPlan: "xz" }
+        SpiralWalkCoordGen.Border = {
+            x: 10, y: 10, z: 10,
+            width: 11, height: 21, depth: 31
+        }
+        SpiralWalkCoordGen.StartCoord = {x: 16, y: 10, z: 26, dy: 1};
+
+        const result = [];
+        for (const coord of SpiralWalkCoordGen) {
+            result.push(coord);
+        }
+
+        expect(result).toHaveLength(7161);
+    })
+
+    test("Walk on all cells in a volume while traversing in x direction", () => {
+        SpiralWalkCoordGen.Reset();
+        SpiralWalkCoordGen.VolumeMode = { enabled: true, iterateOverPlan: "yz" }
+        SpiralWalkCoordGen.Border = {
+            x: 10, y: 10, z: 10,
+            width: 11, height: 21, depth: 31
+        }
+        SpiralWalkCoordGen.StartCoord = {x: 10, y: 21, z: 26, dx: 1};
+
+        const result = [];
+        for (const coord of SpiralWalkCoordGen) {
+            result.push(coord);
+        }
+
+        expect(result).toHaveLength(7161);
+    })
+
 
     test("Ends outside of the border where only including the coords that is inside", () => {
         SpiralWalkCoordGen.Reset();

@@ -282,6 +282,7 @@ export class SpiralWalkCoordGen {
     }
     _insideBoarderSize;
 
+
         // Line 1 - 12
         //          2 9 9 9 9 9 9
         //          2 8 5 5 5 5 0

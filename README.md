@@ -1,20 +1,29 @@
 <img src="readme-img/spiral-walk-example.webp" width="100%">
 
 
+  <br>
+
 # Spiral Walking <br> on a 2D plane in a 2D or 3D world <br> A iterator that generates coordinates
 
-```js
-const inSpiralOrder = [];
-for (const { x, y } of SpiralWalkCoordGen) {
-    inSpiralOrder.push( matrixToWalkIn[ x ][ y ] );
-}
-```
-
-  <br>
 
 This tool let you walk outwards in a spiral from a given point in a 2D plain. The plain can be a 2D matrix or a slice (slabs with one cell thickness) of a 3d volume, or other that takes coordinates as input. 
 
-It's made as an iterator that you use in a for...of loop, as seen in the code block above. In that example the result is a 1D list with all the elements in spiral order. 
+It's made as an iterator that you use in a for...of loop, as seen in the code block below. In that example the result is a 1D list with all the elements in spiral order. 
+
+```js
+const matrixToWalkIn = [
+    [ Y00, J01, K02, L03, M04 ],
+    [ X10, I11, B12, C13, N14 ],
+    [ W20, H21, A22, D23, O24 ],
+    [ V30, G31, F32, E33, P34 ] ];
+
+const inSpiralOrder = [];
+for (const { x, y } of SpiralWalkCoordGen) {
+    inSpiralOrder.push( matrixToWalkIn[ y ][ x ] );
+}
+
+_.isEqual(inSpiralOrder, [ A22, B12, C13, D23, E33, F32, G31, H21, I11, J01, K02, L03, M04, N14, O24, P34, V30, W20, X10, Y00 ]) == true;
+```
 
   <br>
 
@@ -177,7 +186,6 @@ All properties has only setters, so the only output is the iterator and the argu
 > The properties exist as both static properties and as instance properties.
 > All examples works also when using it as a instance.
 
-  <br>
 > [!CAUTION]
 > It does not check the input. The user of this class is responsible for that it is correct.
 
@@ -197,6 +205,7 @@ Is the center and starting point for the spiral.
 | dx | 0.00 | number | Shifts the x coordinate after has ended the circle |
 | dy | 0.00 | number | As dx but for the y coordinate |
 | dz | 0.00 | number | As dx but for the z coordinate. Only used in volume mode
+| increaseAfter | false | boolean | |
 | includeInIteration | true | boolean | Start with the center or the first circle.
 
 ```js

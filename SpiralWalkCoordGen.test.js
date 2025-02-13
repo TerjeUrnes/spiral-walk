@@ -4,34 +4,352 @@ import { SpiralWalkCoordGen } from "./SpiralWalkCoordGen"
 
 describe("Testing Spiral Walk as static", () => {
 
-    test("Testing zero circles, start coordinate included", () => {
+    //#region  StartCoord
+
+    function SettingUpStartCoord() {
         SpiralWalkCoordGen.Reset();
-        SpiralWalkCoordGen.StopCondition = { maxCircles: 0 };
-        SpiralWalkCoordGen.StartCoord = {x: 5, y: 5};
+        SpiralWalkCoordGen.StopCondition = { maxCircles: 0};
+   
+    }
+
+    test("Start coordinate excluded", () => {
+        SettingUpStartCoord();
+        SpiralWalkCoordGen.StartCoord = {x: 5, y: 5, includeInIteration: false};
 
         const result = [];
-
         for (const coord of SpiralWalkCoordGen) {
             result.push(coord);
         }
+        expect(result).toHaveLength(0);
+    })
 
+    test("Start coordinate included", () => {
+        SettingUpStartCoord();
+        SpiralWalkCoordGen.StartCoord = {x: 5, y: 5};
+
+        const result = [];
+        for (const coord of SpiralWalkCoordGen) {
+            result.push(coord);
+        }
         expect(result).toHaveLength(1);
         expect(result[0]).toStrictEqual({x: 5, y: 5});
     })
 
-    test("Testing zero circles, start coordinate excluded", () => {
-        SpiralWalkCoordGen.Reset();
-        SpiralWalkCoordGen.StopCondition = { maxCircles: 0};
-        SpiralWalkCoordGen.StartCoord = {x: 5, y: 5, includeInIteration: false};
-
-        const result = [];
+    test("Setting only x", () => {
+        SettingUpStartCoord();
+        SpiralWalkCoordGen.StartCoord = {x: 5};
         
+        const result = [];
         for (const coord of SpiralWalkCoordGen) {
             result.push(coord);
         }
-
-        expect(result).toHaveLength(0);
+        expect(result).toHaveLength(1);
+        expect(result[0]).toStrictEqual({x: 5, y: 0});
     })
+
+    test("Setting only y", () => {
+        SettingUpStartCoord();
+        SpiralWalkCoordGen.StartCoord = {y: 5};
+
+        const result = [];
+        for (const coord of SpiralWalkCoordGen) {
+            result.push(coord);
+        }
+        expect(result).toHaveLength(1);
+        expect(result[0]).toStrictEqual({x: 0, y: 5});
+    })
+
+    test("Setting x and delta x but no increase", () => {
+        SettingUpStartCoord();
+        SpiralWalkCoordGen.StartCoord = {x: 5, dx: 1};
+
+        const result = [];
+        for (const coord of SpiralWalkCoordGen) {
+            result.push(coord);
+        }
+        for (const coord of SpiralWalkCoordGen) {
+            result.push(coord);
+        }
+        for (const coord of SpiralWalkCoordGen) {
+            result.push(coord);
+        }
+        expect(result).toHaveLength(3);
+        for (let i = 0; i < 3; i++) {
+            expect(result[i]).toStrictEqual({x: 5, y: 0});
+        }
+    })
+
+    test("Setting x and delta x and increase", () => {
+        SettingUpStartCoord();
+        SpiralWalkCoordGen.StartCoord = {x: -5, dx: 1, increaseAfter: true};
+
+        const result = [];
+        for (const coord of SpiralWalkCoordGen) {
+            result.push(coord);
+        }
+        for (const coord of SpiralWalkCoordGen) {
+            result.push(coord);
+        }
+        for (const coord of SpiralWalkCoordGen) {
+            result.push(coord);
+        }
+        expect(result).toHaveLength(3);
+        for (let i = 0; i < 3; i++) {
+            expect(result[i]).toStrictEqual({x: -5 + i, y: 0});
+        }
+    })
+
+    test("Setting y and delta y and no increase", () => {
+        SettingUpStartCoord();
+        SpiralWalkCoordGen.StartCoord = {y: 2, dy: -1};
+
+        const result = [];
+        for (const coord of SpiralWalkCoordGen) {
+            result.push(coord);
+        }
+        for (const coord of SpiralWalkCoordGen) {
+            result.push(coord);
+        }
+        for (const coord of SpiralWalkCoordGen) {
+            result.push(coord);
+        }
+        expect(result).toHaveLength(3);
+        for (let i = 0; i < 3; i++) {
+            expect(result[i]).toStrictEqual({x: 0, y: 2});
+        }
+    })
+
+    test("Setting y and delta y and increase", () => {
+        SettingUpStartCoord();
+        SpiralWalkCoordGen.StartCoord = {y: 2, dy: -1, increaseAfter: true};
+
+        const result = [];
+        for (const coord of SpiralWalkCoordGen) {
+            result.push(coord);
+        }
+        for (const coord of SpiralWalkCoordGen) {
+            result.push(coord);
+        }
+        for (const coord of SpiralWalkCoordGen) {
+            result.push(coord);
+        }
+        expect(result).toHaveLength(3);
+        for (let i = 0; i < 3; i++) {
+            expect(result[i]).toStrictEqual({x: 0, y: 2 - i});
+        }
+    })
+
+    test("Setting delta x and increase", () => {
+        SettingUpStartCoord();
+        SpiralWalkCoordGen.StartCoord = {dx: 3, increaseAfter: true};
+        
+        const result = [];
+        for (const coord of SpiralWalkCoordGen) {
+            result.push(coord);
+        }
+        for (const coord of SpiralWalkCoordGen) {
+            result.push(coord);
+        }
+        for (const coord of SpiralWalkCoordGen) {
+            result.push(coord);
+        }
+        expect(result).toHaveLength(3);
+        for (let i = 0; i < 3; i++) {
+            expect(result[i]).toStrictEqual({x: i * 3, y: 0});
+        }
+    })
+
+    test("Setting delta y and increase", () => {
+        SettingUpStartCoord();
+        SpiralWalkCoordGen.StartCoord = {dy: 3, increaseAfter: true};
+
+        const result = [];
+        for (const coord of SpiralWalkCoordGen) {
+            console.log("First coord", coord);
+            result.push(coord);
+        }
+        expect(result).toHaveLength(1);
+        for (const coord of SpiralWalkCoordGen) {
+            console.log("second coord", coord);
+            result.push(coord);
+        }
+        expect(result).toHaveLength(2);
+        for (const coord of SpiralWalkCoordGen) {
+            console.log("third coord", coord);
+            result.push(coord);
+        }
+        expect(result).toHaveLength(3);
+        for (let i = 0; i < 3; i++) {
+            expect(result[i]).toStrictEqual({x: 0, y: i * 3});
+        }
+    })
+
+    test("Setting coords with float values", () => {
+        SettingUpStartCoord();
+        SpiralWalkCoordGen.StartCoord = {x: 2.3, y: -3.7};
+
+        const result = [];
+        for (const coord of SpiralWalkCoordGen) {
+            result.push(coord);
+        }
+        expect(result).toHaveLength(1);
+        expect(result[0]).toStrictEqual({x: 2, y: -4});
+    })
+
+    test("Setting all with float values and increase", () => {
+        SettingUpStartCoord();
+        SpiralWalkCoordGen.StartCoord = {x: 2.9, y: -9.1, dx: -0.6, dy: 1.8, increaseAfter: true};
+
+        const result = [];
+
+        for (let i = 0; i < 10; i++) {
+            for (const coord of SpiralWalkCoordGen) {
+                result.push(coord);
+            }
+        }
+        expect(result).toHaveLength(10);
+        expect(result[0]).toStrictEqual({x: 2, y: -10});
+        expect(result[1]).toStrictEqual({x: 2, y: -8});
+        expect(result[2]).toStrictEqual({x: 1, y: -6});
+        expect(result[3]).toStrictEqual({x: 1, y: -4});
+        expect(result[4]).toStrictEqual({x: 0, y: -2});
+        expect(result[5]).toStrictEqual({x: -1, y: -1});
+        expect(result[6]).toStrictEqual({x: -1, y: 1});
+        expect(result[7]).toStrictEqual({x: -2, y: 3});
+        expect(result[8]).toStrictEqual({x: -2, y: 5});
+        expect(result[9]).toStrictEqual({x: -3, y: 7});
+    })
+
+    test("Can set all StartCoord", () => {
+        SettingUpStartCoord();
+        SpiralWalkCoordGen.VolumeMode = { enabled: true }
+        SpiralWalkCoordGen.StartCoord = {x: 2, y: -3, z: 1.3, dx: -0.4, dy: 0.4, dz: 1.6, increaseAfter: true, includeInIteration: false};
+
+        let result = [];
+        for (const coord of SpiralWalkCoordGen) {
+            result.push(coord);
+        }
+        expect(result).toHaveLength(0);
+
+        SpiralWalkCoordGen.StartCoord = {includeInIteration: true};
+
+        result = [];
+        for (const coord of SpiralWalkCoordGen) {
+            result.push(coord);
+        }
+        for (const coord of SpiralWalkCoordGen) {
+            result.push(coord);
+        }
+        for (const coord of SpiralWalkCoordGen) {
+            result.push(coord);
+        }
+        expect(result).toHaveLength(3);
+        expect(result[0]).toStrictEqual({x: 1, y: -3, z: 2});
+        expect(result[1]).toStrictEqual({x: 1, y: -3, z: 4});
+        expect(result[2]).toStrictEqual({x: 0, y: -2, z: 6});
+    })
+
+    //#endregion
+
+    //#region VolumeMode
+
+    function SettingUpVolumeMode() {
+        SpiralWalkCoordGen.Reset();
+        SpiralWalkCoordGen.StopCondition = { maxCircles: 0};
+        SpiralWalkCoordGen.VolumeMode = { enabled: true }
+    }
+
+    test("Activating volume mode gives a 3d coordinate output", () => {
+        SettingUpVolumeMode();
+        
+        const result = [];
+        for (const coord of SpiralWalkCoordGen) {
+            result.push(coord);
+        }
+        expect(result).toHaveLength(1);
+        expect(result[0]).toStrictEqual({x: 0, y: 0, z: 0});
+    })
+
+    test("Can set 3d coordinate", () => {
+        SettingUpVolumeMode();
+        SpiralWalkCoordGen.StartCoord = { x: 2, y: 1, z: 3 };
+
+        const result = [];
+        for (const coord of SpiralWalkCoordGen) {
+            result.push(coord);
+        }
+        expect(result).toHaveLength(1);
+        expect(result[0]).toStrictEqual({x: 2, y: 1, z: 3});
+    })
+
+    test("Can set z coord only", () => {
+        SettingUpVolumeMode();
+        SpiralWalkCoordGen.StartCoord = { z: 3 };
+
+        const result = [];
+        for (const coord of SpiralWalkCoordGen) {
+            result.push(coord);
+        }
+        expect(result).toHaveLength(1);
+        expect(result[0]).toStrictEqual({x: 0, y: 0, z: 3});
+    })
+
+    test("Set delta z and no increase", () => {
+        SettingUpVolumeMode();
+        SpiralWalkCoordGen.StartCoord = { dz: 1 };
+
+        const result = [];
+        for (const coord of SpiralWalkCoordGen) {
+            result.push(coord);
+        }
+        for (const coord of SpiralWalkCoordGen) {
+            result.push(coord);
+        }
+        expect(result).toHaveLength(2);
+        expect(result[0]).toStrictEqual({x: 0, y: 0, z: 0});
+        expect(result[1]).toStrictEqual({x: 0, y: 0, z: 0});
+    })
+
+    test("Set delta z and do regular increase", () => {
+        SettingUpVolumeMode();
+        SpiralWalkCoordGen.StartCoord = { dz: 1, increaseAfter: true };
+
+        const result = [];
+        for (const coord of SpiralWalkCoordGen) {
+            result.push(coord);
+        }
+        for (const coord of SpiralWalkCoordGen) {
+            result.push(coord);
+        }
+        for (const coord of SpiralWalkCoordGen) {
+            result.push(coord);
+        }
+        expect(result).toHaveLength(3);
+        expect(result[0]).toStrictEqual({x: 0, y: 0, z: 0});
+        expect(result[1]).toStrictEqual({x: 0, y: 0, z: 1});
+        expect(result[2]).toStrictEqual({x: 0, y: 0, z: 2});
+    })
+
+    test("Set delta z and do auto traverse", () => {
+        SettingUpVolumeMode();
+        SpiralWalkCoordGen.VolumeMode = { autoTraverse: true }
+        SpiralWalkCoordGen.StartCoord = { dz: 1 };
+
+
+        const result = [];
+        for (const coord of SpiralWalkCoordGen) {
+            result.push(coord);
+        }
+        expect(result).toHaveLength(11);
+
+        for (let i = 0; i < 11; i++) {
+            expect(result[i]).toStrictEqual({x: 0, y: 0, z: i});
+        }
+    })
+
+    //#endregion
+
+    // StopCondition
 
     test("Testing one circle", () => {
         SpiralWalkCoordGen.Reset();
@@ -136,7 +454,7 @@ describe("Testing Spiral Walk as static", () => {
     test("Testing one circle on 2 plane in a volume", () => {
         SpiralWalkCoordGen.Reset();
         SpiralWalkCoordGen.StopCondition = { maxCircles: 1, maxPlanes: 2};
-        SpiralWalkCoordGen.VolumeMode = { enabled: true }
+        SpiralWalkCoordGen.VolumeMode = { enabled: true, autoTraverse: true }
         SpiralWalkCoordGen.StartCoord = {dz: 1};
 
         const result = [];
@@ -242,7 +560,7 @@ describe("Testing Spiral Walk as static", () => {
 
     test("Iteration stops after reaching all borders in a cube", () => {
         SpiralWalkCoordGen.Reset();
-        SpiralWalkCoordGen.VolumeMode = { enabled: true };
+        SpiralWalkCoordGen.VolumeMode = { enabled: true, autoTraverse: true };
         SpiralWalkCoordGen.StartCoord = {x: 3, y: 3, z: 1, dz: 1};
         SpiralWalkCoordGen.Border = {
             x: 1,
@@ -272,7 +590,7 @@ describe("Testing Spiral Walk as static", () => {
 
     test("Iteration stops after reaching all borders in a volume", () => {
         SpiralWalkCoordGen.Reset();
-        SpiralWalkCoordGen.VolumeMode = { enabled: true };
+        SpiralWalkCoordGen.VolumeMode = { enabled: true, autoTraverse: true };
         SpiralWalkCoordGen.StartCoord = {x: 3, y: 3, z: 1, dz: 1};
         SpiralWalkCoordGen.Border = {
             x: 1,
@@ -314,7 +632,6 @@ describe("Testing Spiral Walk as static", () => {
         for (const coord of SpiralWalkCoordGen) {
             result.push(coord);
         }
-        console.log(result);
         expect(result).toHaveLength(25);
         expect(result[24]).toStrictEqual({x: 6, y: 0});
 
@@ -323,7 +640,6 @@ describe("Testing Spiral Walk as static", () => {
         for (const coord of SpiralWalkCoordGen) {
             result.push(coord);
         }
-        console.log(result);
         expect(result).toHaveLength(25);
         expect(result[24]).toStrictEqual({x: 6, y: 2});
     })
@@ -597,7 +913,7 @@ describe("Testing Spiral Walk as static", () => {
 
     test("Walk on the xy plane while traversing in the z axes", () => {
         SpiralWalkCoordGen.Reset();
-        SpiralWalkCoordGen.VolumeMode = { enabled: true }
+        SpiralWalkCoordGen.VolumeMode = { enabled: true, autoTraverse: true }
         SpiralWalkCoordGen.StopCondition = { maxCircles: 2 };
         SpiralWalkCoordGen.Border = {
             x: 10, y: 10, z: 10,
@@ -615,7 +931,7 @@ describe("Testing Spiral Walk as static", () => {
 
     test("walk on the xz plane while traversing in the z axes", () => {
         SpiralWalkCoordGen.Reset();
-        SpiralWalkCoordGen.VolumeMode = { enabled: true, iterateOverPlan: "xz" }
+        SpiralWalkCoordGen.VolumeMode = { enabled: true, iterateOverPlan: "xz", autoTraverse: true }
         SpiralWalkCoordGen.StopCondition = { maxCircles: 2 };
         SpiralWalkCoordGen.Border = {
             x: 10, y: 10, z: 10,
@@ -633,7 +949,7 @@ describe("Testing Spiral Walk as static", () => {
 
     test("Walk on the yz plane while traversing in the x axes", () => {
         SpiralWalkCoordGen.Reset();
-        SpiralWalkCoordGen.VolumeMode = { enabled: true, iterateOverPlan: "yz" }
+        SpiralWalkCoordGen.VolumeMode = { enabled: true, iterateOverPlan: "yz", autoTraverse: true }
         SpiralWalkCoordGen.StopCondition = { maxCircles: 2 };
         SpiralWalkCoordGen.Border = {
             x: 10, y: 10, z: 10,
@@ -651,7 +967,7 @@ describe("Testing Spiral Walk as static", () => {
 
     test("Walk on all cells in a volume while traversing im z direction", () => {
         SpiralWalkCoordGen.Reset();
-        SpiralWalkCoordGen.VolumeMode = { enabled: true, iterateOverPlan: "xy" }
+        SpiralWalkCoordGen.VolumeMode = { enabled: true, iterateOverPlan: "xy", autoTraverse: true }
         SpiralWalkCoordGen.Border = {
             x: 10, y: 10, z: 10,
             width: 11, height: 21, depth: 31
@@ -668,7 +984,7 @@ describe("Testing Spiral Walk as static", () => {
 
     test("Walk on all cells in a volume while traversing in y direction", () => {
         SpiralWalkCoordGen.Reset();
-        SpiralWalkCoordGen.VolumeMode = { enabled: true, iterateOverPlan: "xz" }
+        SpiralWalkCoordGen.VolumeMode = { enabled: true, iterateOverPlan: "xz", autoTraverse: true }
         SpiralWalkCoordGen.Border = {
             x: 10, y: 10, z: 10,
             width: 11, height: 21, depth: 31
@@ -685,7 +1001,7 @@ describe("Testing Spiral Walk as static", () => {
 
     test("Walk on all cells in a volume while traversing in x direction", () => {
         SpiralWalkCoordGen.Reset();
-        SpiralWalkCoordGen.VolumeMode = { enabled: true, iterateOverPlan: "yz" }
+        SpiralWalkCoordGen.VolumeMode = { enabled: true, iterateOverPlan: "yz", autoTraverse: true }
         SpiralWalkCoordGen.Border = {
             x: 10, y: 10, z: 10,
             width: 11, height: 21, depth: 31

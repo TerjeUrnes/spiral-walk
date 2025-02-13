@@ -6,9 +6,9 @@
 # Spiral Walking <br> on a 2D plane in a 2D or 3D world <br> A iterator that generates coordinates
 
 
-This tool let you walk outwards in a spiral from a given point in a 2D plain. The plain can be a 2D matrix or a slice (slabs with one cell thickness) of a 3d volume, or other that takes coordinates as input. 
+From a given point in a 2D plain you can walk outwards in a spiral with help of this class. The plain can be a 2D matrix or a slice (slabs with one cell thickness) of a 3d volume, or other that takes coordinates as input. It can repeat the spiral while traversing through a volume ([VolumeMode](#volumemode)). Can go both clockwise and counter clockwise ([Walking](#walking)). Multiple different conditions to stop the spiral ([StopCondition](#stopcondition)). And can filter the spiral path with a custom function ([Filter](#filter)). 
 
-It's made as an iterator that you use in a for...of loop, as seen in the code block below. In that example the result is a 1D list with all the elements in spiral order. 
+It works like an iterator that you use in a for...of loop, as seen in the code block below. In that example the result is a 1D list with all the elements in spiral order. 
 
 ```js
 const matrixToWalkIn = [
@@ -22,7 +22,8 @@ for (const { x, y } of SpiralWalkCoordGen) {
     inSpiralOrder.push( matrixToWalkIn[ y ][ x ] );
 }
 
-_.isEqual(inSpiralOrder, [ A22, B12, C13, D23, E33, F32, G31, H21, I11, J01, K02, L03, M04, N14, O24, P34, V30, W20, X10, Y00 ]) == true;
+_.isEqual(inSpiralOrder, [ A22, B12, C13, D23, E33, F32, G31, H21, I11, 
+        J01, K02, L03, M04, N14, O24, P34, V30, W20, X10, Y00 ]) == true;
 ```
 
   <br>
@@ -111,7 +112,7 @@ while ("Should walk one more circle") {
 
 This is the spiral walk algorithm. It is one while loop and four for loops, the first do-while in the code below is not a part of the circle walk but for moving to the next plain and thus move through a volume. The while loop that is a part of the walk algorithm decides how many circle there should be, while the for loops is for traversing one of the four sides of the circle. See fig.A. 
 
-Notice that the traversing starts on the second square, while in the code the X,Y and Z is set on the upper left corner. So the first to do in the for loop is to shift one square, that is whey starting with increase or decrease the axes that are traversed. waiting with increase or decrease to after generated the coordinate will end up as seen in fig.B. Notice also that length of a side that they traverse is circle number multiplied with 2. 
+As seen the traversing starts on the second square, while in the code the X,Y and Z is set on the upper left corner. So the first to do in the for loop is to shift one square, that is whey starting with increase or decrease the axes that are traversed. Waiting with increase or decrease to after generated the coordinate will end up as seen in fig.B. Also see in fig.A that the length of a side that they traverse is the circle number multiplied with 2. 
 
 > [!NOTE]  
 > In order to keep it simple `planeCount` is here zero based (counts from 0), 
@@ -190,8 +191,8 @@ All properties has only setters, so the only output is the iterator and the argu
 > It does not check the input. The user of this class is responsible for that it is correct.
 
   <br>
-**StartCoord**<br>
-Is the center and starting point for the spiral.
+#### **StartCoord**
+Is the center and starting point for the spiral. It can be shifted between the iterations by setting the delta values and set increaseAfter to true or autoTraverse on [VolumeMode](#volumemode) to true.
 
 > [!NOTE]  
 > Coord outside of border can result in no iteration output.<br>
@@ -229,13 +230,14 @@ for (const coord of SpiralWalkCoorGen) {
 ```
   <br>
 
-**VolumeMode**<br>
+#### **VolumeMode**
 If enabled the walk will be on a 2d plain inside of a 3d volume.
 
 | Argument<br>name | Default<br>value | Values |
 |---|---|---|
 | enabled | false | boolean |
 | iterateOverPlan | "xy" | "xy", "xz" or "yz" |
+| autoTraverse | true | boolean |
 
 ```js
 SpiralWalkCoordGen.VolumeMode = {
@@ -271,7 +273,7 @@ for (const coord of SpiralWalkCoorGen) {
 </details>
 
   <br>
-**StopCondition**<br>
+#### **StopCondition**
 More then one condition can be active. Stops on the first to be fulfilled.<br>
 No active condition should make a infinitive loop. _reachedIterationCount_ that is not reachable can also give infinitive loop, _includeCoordsOutside_ on border can give that problem if it is set to false.
 
@@ -293,7 +295,7 @@ SpiralWalkCoordGen.StopCondition = {
 ```
   <br>
 
-**Filter**
+#### **Filter**
 
 Function input come as [destructuring assignment](https://developer.mozilla.org/en-US/docs/Web/JavaScript/Reference/Operators/Destructuring_assignment).
 
@@ -331,7 +333,7 @@ SpiralWalkCoordGen.Filter = {
 </details>
 
   <br>
-**Border** <br>
+#### **Border** <br>
 Start coord outside of border give no iteration output if includeCoordsOutside is false, its default is false.
 
 | Argument<br>name | Default<br>value | Values | |
@@ -360,7 +362,7 @@ SpiralWalkCoordGen.Border = {
 
   <br>
 
-**Walking**
+#### **Walking**
 
 | Argument<br>name | Default<br>value | Values |
 |---|---|---|
@@ -376,8 +378,8 @@ SpiralWalkCoordGen.Walking = {
 
 ### Functions
 
-**Reset()**<br>
-Exist only as a static function
+#### **Reset()**<br>
+It will set all static properties back to default values. Exist only as a static function. If working with a instance and need to reset, just make a new instance.
 ```js
 SpiralWalkCoordGen.Reset();
 ```

@@ -24,12 +24,14 @@ export class SpiralWalkCoordGen {
         dx: 0,
         dy: 0,
         dz: 0,
+        increaseAfter: false,
         includeInIteration: true,
         intX: 0,
         intY: 0,
         intZ: 0,
         a: 0,
-        b: 0
+        b: 0,
+        c: 0
     }
 
     static set StartCoord(args) {
@@ -43,6 +45,7 @@ export class SpiralWalkCoordGen {
         dx = null,
         dy = null,
         dz = null,
+        increaseAfter = null,
         includeInIteration = null
     } = {}) {
         if (x != null) { 
@@ -66,6 +69,9 @@ export class SpiralWalkCoordGen {
         if (dz != null) {
             this._startCoord.dz = dz;
         }
+        if (increaseAfter != null) {
+            this._startCoord.increaseAfter = increaseAfter;
+        }
         if (includeInIteration != null) { 
             this._startCoord.includeInIteration = includeInIteration; 
         }
@@ -78,7 +84,8 @@ export class SpiralWalkCoordGen {
 
     _volumeMode = {
         enabled: false,
-        iterateOverPlan: "xy"
+        iterateOverPlan: "xy",
+        autoTraverse: false
     }
 
     static set VolumeMode(args) {
@@ -87,13 +94,17 @@ export class SpiralWalkCoordGen {
 
     set VolumeMode({
         enabled = null,
-        iterateOverPlan = null
+        iterateOverPlan = null,
+        autoTraverse = null
     } = {}) {
         if (enabled != null) {
             this._volumeMode.enabled = enabled;
         }
         if (iterateOverPlan != null) {
             this._volumeMode.iterateOverPlan = iterateOverPlan;
+        }
+        if (autoTraverse != null) {
+            this._volumeMode.autoTraverse = autoTraverse;
         }
     }
 
@@ -281,6 +292,7 @@ export class SpiralWalkCoordGen {
         maxB: 0
     }
     _insideBoarderSize;
+    _goToNextPlain;
 
 
         // Line 1 - 12
@@ -356,13 +368,18 @@ export class SpiralWalkCoordGen {
     
                 this.UpdateSpiralWalkAreaPartB(linePointA, linePointB);
             }
+
+            if ((this._volumeMode.enabled && this._volumeMode.autoTraverse) || 
+                    this._startCoord.increaseAfter) {
+                this.IncreaseStartCoordWithDelta();
+            }
         }
         while (this.CheckIfShouldGoToNextPlane())
     }
 
     CheckIfShouldGoToNextPlane() {
 
-        if (this._volumeMode.enabled) {
+        if (this._volumeMode.enabled && this._volumeMode.autoTraverse) {
 
             if (this._stopCondition.maxPlanes !== false && this._planeCount >= this._stopCondition.maxPlanes) {
                 return false;
@@ -371,17 +388,8 @@ export class SpiralWalkCoordGen {
                 (this._volumeMode.iterateOverPlan == "xz" && this._startCoord.dy != 0) || 
                 (this._volumeMode.iterateOverPlan == "xy" && this._startCoord.dz != 0)
             ) {
-                this.IncreaseStartCoordWithDelta();
 
-                let c = this._startCoord.intZ;
-                if (this._volumeMode.iterateOverPlan == "xz") {
-                    c = this._startCoord.intY;
-                }
-                else if (this._volumeMode.iterateOverPlan == "yz") {
-                    c = this._startCoord.intX;
-                }
-
-                if (this.IsOutsideOfBorderMinC({c: c}) || this.IsOutsideOfBorderMaxC({c: c})) {
+                if (this.IsOutsideOfBorderMinC({c: this._startCoord.c}) || this.IsOutsideOfBorderMaxC({c: this._startCoord.c})) {
                     return false;
                 }
                 else {
@@ -517,7 +525,6 @@ export class SpiralWalkCoordGen {
         else if (this._volumeMode.iterateOverPlan == "yz") {
             planeBorder = this._border.rightPlaneMaxX;
         }
-        console.log("c", c, "planeBoarder", planeBorder);
         return c > planeBorder;
     }
 
@@ -602,17 +609,18 @@ export class SpiralWalkCoordGen {
 
     IncreaseStartCoordXWithDelta() {
         this._startCoord.x += this._startCoord.dx;
-        this._startCoord.intX = this._startCoord.x;
+        this._startCoord.intX = Math.floor(this._startCoord.x);
     }
 
     IncreaseStartCoordYWithDelta() {
         this._startCoord.y += this._startCoord.dy;
-        this._startCoord.intY = this._startCoord.y;
+        this._startCoord.intY = Math.floor(this._startCoord.y);
     }
 
     IncreaseStartCoordZWithDelta() {
         this._startCoord.z += this._startCoord.dz;
-        this._startCoord.intZ = this._startCoord.z;
+        this._startCoord.intZ = Math.floor(this._startCoord.z);
+        console.log("Increasing coord", this._startCoord.dz, this._startCoord.intZ);
     }
 
     UpdateStartCoordAB() {
@@ -620,14 +628,17 @@ export class SpiralWalkCoordGen {
             if (this._volumeMode.iterateOverPlan == "xy") {
                 this._startCoord.a = this._startCoord.intX;
                 this._startCoord.b = this._startCoord.intY;
+                this._startCoord.c = this._startCoord.intZ;
             }
             else if (this._volumeMode.iterateOverPlan == "xz") {
                 this._startCoord.a = this._startCoord.intX;
                 this._startCoord.b = this._startCoord.intZ;
+                this._startCoord.c = this._startCoord.intY;
             }
             else if (this._volumeMode.iterateOverPlan == "yz") {
                 this._startCoord.a = this._startCoord.intY;
                 this._startCoord.b = this._startCoord.intZ;
+                this._startCoord.c = this._startCoord.intX;
             } 
         }
         else {
@@ -639,13 +650,13 @@ export class SpiralWalkCoordGen {
     ConstructCoord({ a = null, b = null} = {}) {
         if (this._volumeMode.enabled) {
             if (this._volumeMode.iterateOverPlan == "xy") {
-                return { x: a, y: b, z: this._startCoord.intZ }
+                return { x: a, y: b, z: this._startCoord.c }
             }
             else if (this._volumeMode.iterateOverPlan == "xz") {
-                return { x: a, y: this._startCoord.intY, z: b }
+                return { x: a, y: this._startCoord.c, z: b }
             }
             else if (this._volumeMode.iterateOverPlan == "yz") {
-                return { x: this._startCoord.intX, y: a, z: b }
+                return { x: this._startCoord.c, y: a, z: b }
             } 
         }
         return { x: a, y: b };
